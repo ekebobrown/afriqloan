@@ -1,5 +1,5 @@
 :root {
-  --max-width: 1100px;
+  --max-width: 1240px;
   --border-radius: 12px;
   --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
@@ -9,6 +9,7 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 
+  --primary-color: rgb(12, 75, 84);
   --primary-glow: conic-gradient(
     from 180deg at 50% 50%,
     #16abff33 0deg,
@@ -17,10 +18,14 @@
     #0071ff33 160deg,
     transparent 360deg
   );
+
+  --secondary-color: #E8F448;
   --secondary-glow: radial-gradient(
     rgba(255, 255, 255, 1),
     rgba(255, 255, 255, 0)
   );
+
+  --tertiary-color: #F0F1F3;
 
   --tile-start-rgb: 239, 245, 249;
   --tile-end-rgb: 228, 232, 233;
@@ -40,6 +45,7 @@
   --card-border-rgb: 131, 134, 135;
 }
 
+/**
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -72,6 +78,7 @@
     --card-border-rgb: 200, 200, 200;
   }
 }
+*/
 
 * {
   box-sizing: border-box;
@@ -87,21 +94,191 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
+  /*background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb));*/
+    background-color: var(--primary-color);
 }
 
-a {
-  color: inherit;
+/* Overwrites */
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700 !important
+}
+/* Containers */
+.container-md {
+  max-width: var(--max-width);
+}
+
+container-sm {
+  max-width: 800px !important
+}
+/* Backgrounds */
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.bg-tertiary {
+  background-color: var(--tertiary-color) !important;
+}
+
+.border-primary {
+  border-color: var(--primary-color) !important;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.8rem 1.8rem !important;
+  border: 0 !important
+}
+
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  color: var(--tertiary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color);
+}
+
+.btn-outline-primary {
+  border: 2px solid var(--primary-color) !important;
+  color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  border: 2px solid var(--primary-color) !important;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color);
+  border: 2px solid var(--secondary-color) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-color) !important;
+  color: #FFFFFF;
+  border: 2px solid var(--secondary-color) !important;
+}
+
+.btn-outline-secondary {
+  border: 2px solid var(--secondary-color) !important;
+  color: var(--tertiary-color);
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--secondary-color) !important;
+}
+
+/* Typography */
+.text-primary {
+  color: var(--primary-color) !important
+}
+
+.text-secondary {
+  color: var(--secondary-color) !important;
+}
+
+/* Nagigation Links */
+.navbar {
+  border-bottom: 1px solid rgb(116 126 128 / 35%) !important
+}
+
+.nav-link, .navbar-brand {
+  color: #FFFFFF !important;
+  font-size: 1rem;
+}
+
+.navbar-brand-dark {
+  color: var(--primary-color) !important;
+  font-size: 1.2rem;
   text-decoration: none;
 }
 
+.link {
+  text-decoration: none !important;
+  color: var(--primary-color);
+}
+
+.link:hover {
+  color: #a3a3a3;
+}
+
+.link-primary {
+  color: var(--primary-color);
+}
+
+.link-primary:hover {
+  color: var(--secondary-color) !important;
+}
+
+.dropdown-item:active {
+  background-color: var(--primary-color) !important;
+}
+
+
+/* Form Controls */
+input[type="text"],
+input[type="phone"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  border: 1px solid var(--primary-color);
+  padding: 1.0rem;
+  resize: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
+
+/**
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+  **/
+
+.p-lg {
+  padding: 4.5rem 1.5rem;
+}
+
+#sidebar ul {
+  list-style-type: none;
+  padding-left: 0 !important;
+}
+
+/* Media Screens */
+@media (min-width: 768px) {
+  .border-right {
+    border-right: 5px solid #CCCCCC
+  }
+}
+
+@media (max-width: 767px) {
+  .border-bottom-sm {
+    border-bottom: 5px solid #CCCCCC
+  }
+}
+
+@media (min-width: 1400px) {
+  .container-sm {
+    max-width: 800px !important;
   }
 }
