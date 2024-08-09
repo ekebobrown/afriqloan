@@ -259,12 +259,23 @@ button:focus {
   padding: 4.5rem 1.5rem;
 }
 
-#sidebar ul {
+#sidebar ul, #dashboard-nav ul {
   list-style-type: none;
   padding-left: 0 !important;
 }
 
+#dashboard-nav ul li:hover {
+  background-color: var(--primary-color);
+  color: #FFFFFF
+}
+
 /* Media Screens */
+@media (min-width: 500px) {
+  #dashboard-nav .navbar-toggler {
+    display: none !important
+  }
+}
+
 @media (min-width: 768px) {
   .border-right {
     border-right: 5px solid #CCCCCC

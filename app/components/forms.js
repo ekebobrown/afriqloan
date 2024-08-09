@@ -135,7 +135,7 @@ export function LoginForm() {
             elem.innerHTML = `<span class='text-success'>${data.message}</span>`
             setTimeout(()=>{
                 router.replace("/dashboard")
-            }, 2000)
+            },500)
         }else{
             elem.innerHTML = `<span class='text-danger'>${data.error}</span>`
             setTimeout(()=>{
@@ -169,19 +169,15 @@ export function RegistrationForm(){
                 <Link href="/login" className="link mb-3">Alread Registered?</Link>
             </div>
             <button type="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?<>Submitting<i className="fa-solid fa-circle-notch fa-spin ms-2"></i></>:"Submit"}</button>
-            <input type="hidden" name="status" value="pending" />
         </>
     )
 }
 
 export function Registration() {
-    const [state] = useState({api: '/api/account/register', method: 'POST'})
-    const [formData, formAction] = useFormState(submitForm, state)
+    const [state, action] = useFormState(submitForm, {api: '/api/account/register', status: "pending", date: Date.now()})
     const router = useRouter()
 
-    console.log(formData)
-
-    if (formData?.success) {
+    if (state?.success) {
         setTimeout(()=>{
             router.push('/login')
         }, 2000)
@@ -189,10 +185,10 @@ export function Registration() {
 
     return (
         <>
-            <form action={formAction} className="d-flex flex-column w-100" autoComplete="no">
+            <form action={action} className="d-flex flex-column w-100" autoComplete="no">
                 <RegistrationForm />
             </form>
-            <small id="info" className={`${formData.success?"text-success":"text-danger"}`}>{formData.message}</small>
+            <small id="info" className={`${state?.success?"text-success":"text-danger"}`}>{state?.message}</small>
         </>
     )
 }
@@ -342,7 +338,7 @@ export function Loan() {
                             <span className="me-auto">{state.id||'Click here to upload Government ID'}</span>
                             <i className="fa-solid fa-circle-question" title="Portable Document Format (PDF) Only"></i>
                         </div>
-                        <input type="file" className="fs-5" name="governmentid" onChange={(e)=>{setState({...state, id: e.target.files[0].name}); console.log(state)}}  accept=".pdf" hidden />
+                        <input type="file" className="fs-5" name="governmentid" onChange={(e)=>setState({...state, id: e.target.files[0].name})}  accept=".pdf" hidden />
                     </label>
                     <div className="d-flex flex-column flex-md-row gap-4">
                         <label className="d-flex flex-column flex-fill align-self-start"><input type="number" name="bvn" className="flex-fill" value={state.bvn} onChange={handleChange} placeholder="BVN" min="11" max="11"/></label>

@@ -16,14 +16,15 @@ export async function POST(request){
             throw new Error(response.error, {cause: {status: response.status}})
         }
         //Query database for user supplied email
-        const user = await connection.findOne({email:formData.email})
+        const user = await connection.findOne({email:formData.email},{projection: {email:1, password: 1, status: 1}})
 
         //Check if user exist in the database
         if(!user){
             throw new Error('User does not exist, check email and try again', {cause: {status: 404}})
         }
-        //Confirm user activation status
-        if(!user.activated){
+
+        //Confirm user status
+        if(user.status!="activated"){
             throw new Error('Email address not activated', {cause: {status: 403}})
         }
         //Verify user password
@@ -33,9 +34,9 @@ export async function POST(request){
         }
         //Create a token to be used for user session authentication
         const payload = {
-            names: user.names,
+            names: user._id,
             email: user.email,
-            phone: user.phone
+            names: user.status
         }
 
         const session_token = jwt.sign(payload, process.env.JWT_SECRET_KEY)

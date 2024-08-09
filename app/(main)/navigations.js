@@ -24,9 +24,9 @@ export function MainNav() {
                                 Services
                             </Link>
                                 <ul className="dropdown-menu">
-                                    <li><Link className="dropdown-item" href="/loans/recovery">Debt Recovery</Link></li>
-                                    <li><Link className="dropdown-item" href="/loans/collection">Loans</Link></li>
-                                    <li><Link className="dropdown-item" href="/spaces/coworking">Working Space</Link></li>
+                                    <li><Link className="dropdown-item" href="/loans/recovery">Loan Recovery</Link></li>
+                                    <li><Link className="dropdown-item" href="/loans/collection">Joint Savings</Link></li>
+                                    <li><Link className="dropdown-item" href="/spaces/coworking">Co-Working</Link></li>
                                 </ul>
                         </li>
                         <li className="nav-item px-2 me-auto">
@@ -66,11 +66,11 @@ export function Services() {
 export function User() {
     return (
         <>
-            <li><Link href="/dashboard" className="link d-inline-flex align-items-center"><span className="fa-solid fa-chalkboard me-2"></span>Dashboard</Link></li>
-            <li><Link href="/dashboard/loan" className="link d-inline-flex align-items-center"><span className="fa-solid fa-receipt me-2"></span>Loan</Link></li>
-            <li><Link href="/dashboard/account" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-user me-2"></span>Account</Link></li>
-            <li><Link href="/dashboard/inbox" className="link d-inline-flex align-items-center"><span className="fa-solid fa-envelope me-2"></span>Inbox</Link></li>
-            <li><Link href="/dashboard/settings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-gear me-2"></span>Setting</Link></li>
+            <li><Link href="/dashboard" className="link d-inline-flex align-items-center"><span className="fa-solid fa-chalkboard fa-fw me-2"></span>Dashboard</Link></li>
+            <li><Link href="/dashboard/loan" className="link d-inline-flex align-items-center"><span className="fa-solid fa-receipt fa-fw me-2"></span>Loan</Link></li>
+            <li><Link href="/dashboard/account" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-user fa-fw me-2"></span>Account</Link></li>
+            <li><Link href="/dashboard/inbox" className="link d-inline-flex align-items-center"><span className="fa-solid fa-envelope fa-fw me-2"></span>Inbox</Link></li>
+            <li><Link href="/dashboard/settings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-gear fa-fw me-2"></span>Setting</Link></li>
         </>
     )
 }
@@ -78,9 +78,9 @@ export function User() {
 export function Info() {
     return (
         <>
-            <li><Link href="/dashboard/information" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-info me-2"></span>Information</Link></li>
-            <li><Link href="/dashboard/terms" className="link d-inline-flex align-items-center"><span className="fa-solid fa-shield-halved me-2"></span>Security Terms</Link></li>
-            <li><span className="fa-solid fa-phone me-2"></span>+234-800-300-333</li>
+            <li><Link href="/dashboard/information" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-info fa-fw me-2"></span>Information</Link></li>
+            <li><Link href="/dashboard/terms" className="link d-inline-flex align-items-center"><span className="fa-solid fa-shield-halved fa-fw me-2"></span>Security Terms</Link></li>
+            <li><span className="fa-solid fa-phone fa-fw me-2"></span>+234-800-300-333</li>
         </>
     )
 }

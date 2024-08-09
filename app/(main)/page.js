@@ -19,7 +19,7 @@ export default function Home() {
               <p className="fs-5">Our loan services offer a hassle-free and streamlined borrowing experience, providing you with the funds you need in a timely manner to meet your financial requirements.</p>
               <Link href="register" className="btn btn-secondary rounded-pill fs-4" role="button">Get Started</Link>
             </div>
-            <div className="col flex-fill" style={{backgroundImage:"url('/hero-image-3.png')", backgroundPosition:"bottom center", backgroundSize:"115%", backgroundRepeat:"no-repeat"}}>
+            <div className="col flex-fill" style={{backgroundImage:"url('/hero-image-3.png')", backgroundPosition:"bottom center", backgroundSize:"115%", backgroundRepeat:"no-repeat", minHeight:"450px"}}>
             </div>
           </div>
         </section>
@@ -35,7 +35,7 @@ export default function Home() {
                 Couples can synchronise their budgets and expenditure to achieve financial chemistry 
               </p>
             </ServiceCard>
-            <ServiceCard image="/icons/co-working-living.png" title="Co-working & Co-living" layout={1}>
+            <ServiceCard image="/icons/co-working-living.png" title="Co-Working" layout={1}>
               <p>
                 Drop in and hot-desk in an open-plan workspace, or reserve your own dedicated desk in a shared office.
               </p>
@@ -51,26 +51,26 @@ export default function Home() {
           <div className="container-md">
             <h1 className="display-4 text-primary mt-5">Our Services</h1>
             <div className="service d-flex flex-column flex-md-row mb-5">
-              <div className="d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"450px"}}>
+              <div className=" order-1 order-md-0 d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"400px"}}>
                 <h2>Debt Recovery</h2>
                 <p className="fs-5 pe-md-4">When we handle your debt recovery, we integrate into your business to create effective, ethical strategies, delivering tangible and timely results.</p>
                 <Link href="/loans/recovery" className="btn btn-primary rounded-pill" role="button">Let&apos;s Help You</Link>
               </div>
-              <div className="col-12 col-md-6" style={{backgroundImage:"url('/loan-recovery.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%"}}>
+              <div className="col-12 col-md-6 order-0 order-md-1" style={{backgroundImage:"url('/loan-recovery.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%", minHeight:"250px"}}>
               </div>
             </div>
             <div className="service d-flex flex-column flex-md-row my-5">
-              <div className="d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"450px"}}>
+              <div className=" order-1 order-md-0 d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"400px"}}>
                 <h3><strong>Joint Savings</strong> (Contribution)</h3>
                 <p className="fs-5 pe-md-4">Take your partnership to the next level and manage a united financial vision with one account that’s twice as nice.</p>
                 <Link href="/account" className="btn btn-primary rounded-pill">Open Joint Account</Link>
               </div>
-              <div className="col-12 col-md-6" style={{backgroundImage:"url('/joint-savings-1.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%"}}>
+              <div className="col-12 col-md-6 order-0 order-md-1" style={{backgroundImage:"url('/joint-savings-1.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%", minHeight:"250px"}}>
               &nbsp;
               </div>
             </div>
             <div className="service d-flex flex-column flex-md-row my-5">
-              <div className="d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"450px"}}>
+              <div className=" order-1 order-md-0 d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"400px"}}>
                 <h3>Co-working & Co-living</h3>
                 <p className="fs-5 pe-md-4">Work along like-minded professionals in our vibrant coworking spaces in Lagos, with break out areas and networking events to foster collaboration and growth.</p>
                 <div className="d-flex flex-column flex-md-row">
@@ -78,7 +78,7 @@ export default function Home() {
                   <Link href="/spaces/coworking" className="btn btn-outline-primary rounded-pill mb-3" role="button">Explore</Link>
                 </div>
               </div>
-              <div className="col-12 col-md-6" style={{backgroundImage:"url('/office-space.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%"}}>
+              <div className="col-12 col-md-6 order-0 order-md-1" style={{backgroundImage:"url('/office-space.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%", minHeight:"250px"}}>
               </div>
             </div>
           </div>

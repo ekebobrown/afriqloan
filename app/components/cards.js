@@ -91,8 +91,8 @@ export function Token({title, balance }){
     }
 
     return (
-        <div className="d-flex flex-column bg-light p-4 rounded-4 flex-fill gap-3 fs-4">
-            <span>{title} Balance</span>
+        <div className="d-flex flex-column bg-light p-4 rounded-4 flex-fill gap-3 fs-4 overflow-x-hidden">
+            <span className="text-truncate">{title} Balance</span>
             <div className="d-inline-flex align-items-center fs-5 fw-semibold">
                 {view['title']?amountFormat.format(balance):"**************"}
                 <i className="fa-regular fa-eye ms-2 align-text-top" onClick={toggleView} role="button"></i>

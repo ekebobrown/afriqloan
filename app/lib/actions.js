@@ -1,15 +1,23 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
 
 export async function submitForm(state, formData) {
     const details = Object.fromEntries(formData)
     Object.keys(details).forEach(key => {if(key.startsWith('$ACTION_')){delete details[key]}})
+    var updatedDetails
+    
+    if(Object.keys(state).length > 3){
+        updatedDetails = {...details, status: state.status, date: state.date}
+    }else{
+        updatedDetails = details
+    }
 
-    const response = await fetch(`http://localhost/${state.api}`, {
-        method: state.method,
-        body: JSON.stringify(details)
+    const response = await fetch(`${process.env.SITE_URL}/${state.api}`, {
+        method: "POST",
+        body: JSON.stringify(updatedDetails)
     })
     const data = await response.json()
 
@@ -28,5 +36,5 @@ export async function submitForm(state, formData) {
 
 export async function logout(formData){
     cookies().delete('session_token')
-    redirect('/')
+    NextResponse.redirect(new URL("/", process.env.SITE_URL))
 }

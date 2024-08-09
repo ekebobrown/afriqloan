@@ -10,18 +10,20 @@ export const revalidate = 0
 
 export default async function Dashboard() {
   const session_token = cookies().get("session_token")?.value
-  const [balances] = await fetch(`http://localhost/api/account/balances`, {
-    headers: {
-      Authorization: `Bearer ${session_token}`
-    }
-  }).then((res) => res.json())
-  const transactions = await fetch(`http://localhost/api/account/transactions`, {
-    headers: {
-      Authorization: `Bearer ${session_token}`
-    }
-  }).then((res)=>res.json())
-  
   const currencyFormat = new Intl.NumberFormat('en-US', {style:'currency', currency:'NGN'})
+
+  const [balances] = await fetch(`${process.env.SITE_URL}/api/account/balances`, {
+    headers: {
+      Authorization: `Bearer ${session_token}`
+    }
+  }).then((response) => response.json())
+
+  const transactions = await fetch(`${process.env.SITE_URL}/api/account/transactions`, {
+    headers: {
+      Authorization: `Bearer ${session_token}`
+    }
+  }).then((response)=>response.json())
+  
 
   return (
     <div className="">
@@ -43,7 +45,7 @@ export default async function Dashboard() {
           ))}
         </div>
       </section>
-      <section id="transation" className="d-flex flex-column row-gap-3 p-5 ">
+      <section id="transaction" className="d-flex flex-column row-gap-3 px-3 py-5 p-md-5">
         <div className="d-flex flex-column flex-md-row">
           <div className="d-flex flex-column me-auto">
             <h4>Transactions</h4>
@@ -55,24 +57,30 @@ export default async function Dashboard() {
             <Link href="#" className="link">Savings</Link>
           </div>
         </div>
-        <table className="table table-hover flex-fill border border-1 rounded-4 fs-5">
+        <div className=" overflow-x-scroll" style={{scrollbarWidth:'none'}}>
+        <table className="table table-hover flex-fill border border-1 rounded-4 fs-5 text-nowrap">
           <thead className="">
             <tr className="table-light">
-              <th>Transation Type</th>
-              <th>Transation Date</th>
-              <th>Transation Amount</th>
+              <th>Source</th>
+              <th>Destination</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Reference</th>
             </tr>
           </thead>
           <tbody>
           {transactions.map((datum)=>(
             <tr key={datum._id}>
+              <td>{datum.source}</td>
               <td>{datum.destination}</td>
               <td><div className="d-flex flex-column">{(new ObjectId(datum._id).getTimestamp()).toDateString()}<small className="text-primary" style={{fontSize: "0.8rem"}}>{(new ObjectId(datum._id).getTimestamp()).toLocaleTimeString()}</small></div></td>
               <td>{currencyFormat.format(datum.amount)}</td>
+              <td>Ref-{datum._id}</td>
             </tr>
           ))}
           </tbody>
         </table>
+        </div>
       </section>
     </div>
   )
