@@ -5,10 +5,10 @@ import Brand from '@/app/components/brand'
 import { logout } from '@/app/lib/actions'
 
 export function MainNav() {
-    const session_token = cookies().get('session_token')?.value
+    const session_token = cookies().get("session_token")?.value
 
     return (
-        <nav className="navbar navbar-expand-md bg-primary sticky-top">
+        <nav className="navbar navbar-expand-md bg-primary">
             <div className="container-md">
                 <Brand />
                 <button className="navbar-toggler border-2 border-white" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,16 +17,16 @@ export function MainNav() {
                 <div className="collapse navbar-collapse pb-4 pb-md-0 justify-content-md-end" id="navbar">
                     <ul className="navbar-nav col-12 col-md-10 mb-2 justify-content-center align-items-md-center mb-lg-0">
                         <li className="nav-item px-2">
-                            <Link className="nav-link active" aria-current="page" href="/aboutus">About Us</Link>
+                            <Link className="nav-link active" aria-current="page" href="#aboutus">About Us</Link>
                         </li>
                         <li className="nav-item dropdown px-2">
                             <Link className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Services
                             </Link>
                                 <ul className="dropdown-menu">
-                                    <li><Link className="dropdown-item" href="/loans/recovery">Debt Recovery</Link></li>
-                                    <li><Link className="dropdown-item" href="/loans/collection">Loans</Link></li>
-                                    <li><Link className="dropdown-item" href="/spaces/coworking">Working Space</Link></li>
+                                    <li><Link className="dropdown-item" href="/loans/recovery">Loan Recovery</Link></li>
+                                    <li><Link className="dropdown-item" href="/savings">Joint Savings</Link></li>
+                                    <li><Link className="dropdown-item" href="/spaces/coworking">Co-Working</Link></li>
                                 </ul>
                         </li>
                         <li className="nav-item px-2 me-auto">
@@ -57,7 +57,6 @@ export function Services() {
         <>
             <li><Link href="/loans/recovery" className="link text-white">Loan Recovery</Link></li>
             <li><Link href="/spaces/coworking" className="link text-white">Co-working</Link></li>
-            <li><Link href="/spaces/coliving" className="link text-white">Co-living</Link></li>
             <li><Link href="/accounts/jointsavings" className="link text-white">Joint Savings</Link></li>
         </>
     )
@@ -66,11 +65,11 @@ export function Services() {
 export function User() {
     return (
         <>
-            <li><Link href="/dashboard" className="link d-inline-flex align-items-center"><span className="fa-solid fa-chalkboard me-2"></span>Dashboard</Link></li>
-            <li><Link href="/dashboard/loan" className="link d-inline-flex align-items-center"><span className="fa-solid fa-receipt me-2"></span>Loan</Link></li>
-            <li><Link href="/dashboard/account" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-user me-2"></span>Account</Link></li>
-            <li><Link href="/dashboard/inbox" className="link d-inline-flex align-items-center"><span className="fa-solid fa-envelope me-2"></span>Inbox</Link></li>
-            <li><Link href="/dashboard/settings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-gear me-2"></span>Setting</Link></li>
+            <li><Link href="/dashboard" className="link d-inline-flex align-items-center"><span className="fa-solid fa-chalkboard fa-fw me-2"></span>Dashboard</Link></li>
+            <li><Link href="/dashboard/loans" className="link d-inline-flex align-items-center"><span className="fa-solid fa-landmark fa-fw me-2"></span>Loans</Link></li>
+            <li><Link href="/dashboard/savings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-vault fa-fw me-2"></span>Savings</Link></li>
+            <li><Link href="/dashboard/listings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-elevator fa-fw me-2"></span>Listings</Link></li>
+            <li><Link href="/dashboard/inbox" className="link d-inline-flex align-items-center"><span className="fa-solid fa-envelope fa-fw me-2"></span>Inbox</Link></li>
         </>
     )
 }
@@ -78,9 +77,10 @@ export function User() {
 export function Info() {
     return (
         <>
-            <li><Link href="/dashboard/information" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-info me-2"></span>Information</Link></li>
-            <li><Link href="/dashboard/terms" className="link d-inline-flex align-items-center"><span className="fa-solid fa-shield-halved me-2"></span>Security Terms</Link></li>
-            <li><span className="fa-solid fa-phone me-2"></span>+234-800-300-333</li>
+            <li><Link href="/dashboard/settings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-gear fa-fw me-2"></span>Setting</Link></li>
+            <li><Link href="/dashboard/information" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-info fa-fw me-2"></span>Information</Link></li>
+            <li><Link href="/dashboard/terms" className="link d-inline-flex align-items-center"><span className="fa-solid fa-shield-halved fa-fw me-2"></span>Security Terms</Link></li>
+            <li><span className="fa-solid fa-phone fa-fw me-2"></span>+234-800-300-333</li>
         </>
     )
 }

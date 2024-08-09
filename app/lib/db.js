@@ -30,12 +30,12 @@ async function Connection(db, coll) {
     }
 
     if(!connection.s) {
-      throw new Error()
+      throw new Error("Error connecting to database. Please check your network and try again")
     }
 
     return connection
   } catch(error){
-    return NextResponse.json({error: "Error connecting to database. Please check your network and try again"},{status: 500, ok: false})
+    throw new Error(error.message)
   }
 }
 

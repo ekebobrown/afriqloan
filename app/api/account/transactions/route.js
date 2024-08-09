@@ -19,7 +19,7 @@ export async function GET(request) {
         const collections = await Connection("afriqloan", "transactions")
         const transactions = await collections
                                 .find({'beneficiary': new ObjectId('66aec861f551ee571c81d0fa')})
-                                .project({amount:1, destination:1})
+                                .project({amount:1, source:1, destination:1})
                                 .toArray()
         return NextResponse.json(transactions)
     }catch(error){

@@ -6,6 +6,10 @@
   min-height: 92vh;
 }
 
+.fh {
+  min-height: 70vh;
+}
+
 .section {
   padding: 4.5rem 1.5rem;
 }

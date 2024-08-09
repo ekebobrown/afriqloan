@@ -9,14 +9,15 @@ export async function POST(request) {
     const formData = await request.json()
     try{
         //Check for database connection establishment
-        const collection = await Connection('afriqloan', 'users')
+        const users = await Connection('afriqloan', 'users')
+        const activation = await Connection('afriqloan', 'pending_activations')
 
-        if(!collection.s){
-            const response = await collection.json()
+        if(!users.s || !activation.s){
+            const response = await users.json()
             throw new Error(response.error, {cause: {code: 500}})
         }
         //Check if e-mail is already registered
-        const user = await collection.findOne({email:formData.email})
+        const user = await users.findOne({email:formData.email})
         if(user){
             throw new Error("E-mail already registered on this application", {cause: {code: 403}})
         }
@@ -24,7 +25,7 @@ export async function POST(request) {
         const salt = await bcrypt.genSalt(10);
         const hashpassword = await bcrypt.hash(formData.password, salt);
         formData.password = hashpassword
-        await collection.insertOne(formData)
+        await users.insertOne(formData)
         //Return response
         return NextResponse.json({message:"Account created successfully. Redirecting shortly..."},{status:200})
     }catch(error){

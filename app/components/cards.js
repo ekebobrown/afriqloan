@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import Skeleton from 'react-loading-skeleton'
+
 export function ServiceCard({image, title, children, layout}) {
   return (
     <div className="bg-tertiary rounded-5 px-4 py-5">
@@ -60,18 +62,18 @@ export function Testimonial ({avatar = "/assets/picture-placeholder.jpeg", layou
             <div className={`d-flex ${layout===1?'flex-column flex-fill align-items-start justify-content-start':'flex-row align-items-end'} mb-2`}>
                 <div className={`${layout===1?'mb-auto':''} me-4`} style={{height:80, width:80, borderRadius:"50%", overflow:"hidden"}}>
                     <Image
-                        src={avatar}
+                        src={avatar||<Skeleton />}
                         alt={author}
                         width={80}
                         height={80}
                     />
                 </div>
                 <div className="fs-3 text-primary fw-semibold my-2">
-                    {author}
+                    {author||<Skeleton />}
                 </div>
             </div>
             <div className="fs-6">
-                {children}
+                {children||<Skeleton count={3}/>}
             </div>
         </div>
     )
@@ -91,8 +93,8 @@ export function Token({title, balance }){
     }
 
     return (
-        <div className="d-flex flex-column bg-light p-4 rounded-4 flex-fill gap-3 fs-4">
-            <span>{title} Balance</span>
+        <div className="d-flex flex-column bg-light p-4 rounded-4 flex-fill gap-3 fs-4 overflow-x-hidden">
+            <span className="text-truncate">{title} Balance</span>
             <div className="d-inline-flex align-items-center fs-5 fw-semibold">
                 {view['title']?amountFormat.format(balance):"**************"}
                 <i className="fa-regular fa-eye ms-2 align-text-top" onClick={toggleView} role="button"></i>

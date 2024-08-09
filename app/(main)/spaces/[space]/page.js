@@ -3,14 +3,21 @@ import { NextResponse } from "next/server";
 import { SpaceCard } from "@/app/components/cards";
 import Connection from "@/app/lib/db";
 
+export const dynamic = 'auto'
+export const revalidate = 60
+
 export async function generateStaticParams() {
     "use server"
-    const collection = await Connection("afriqloan", "spaces")
-    const spaces = await collection.find({}, {type:1})
-                                        .toArray()
-    return spaces.map((space) => ({
-            space: space.type,
-            })) 
+    try{
+        const collection = await Connection("afriqloan", "spaces")
+        const spaces = await collection.find({}, {type:1})
+                                            .toArray()
+        return spaces.map((space) => ({
+                space: space.type,
+                }))
+        }catch(error){
+        console.log(error)
+    }
 }
 
 async function getSpaces(params){
@@ -31,7 +38,7 @@ export default async function Space({params}) {
 
     if(spaces?.length>0){
         content =
-            <div className="container-md row row-cols-1 row-cols-md-3 align-self-center">
+            <div id="spaces" className="container-md row row-cols-1 row-cols-md-3 align-self-center">
                 {spaces.map((space)=>(
                     <div key={space._id} className="pb-5">
                         <SpaceCard

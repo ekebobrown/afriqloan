@@ -8,11 +8,11 @@ export async function middleware(request) {
         return NextResponse.redirect(new URL('/login', request.url))
       }
 
-    if (session_token && path.startsWith('/login')) {
+    if (session_token && path.startsWith('/login'||'/register?asa=user')) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
   }
 
   export const config = {
-    matcher: ['/dashboard/:path*','/login']
+    matcher: ['/dashboard/:path*','/login', '/register']
   }
