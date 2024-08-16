@@ -265,6 +265,19 @@ button:focus {
   padding-left: 0 !important;
 }
 
+#sidebar li {
+  border-left: 3px solid #F8F9FA;
+}
+
+#sidebar li {
+  padding: 0.5rem 1rem
+}
+
+#sidebar li:hover, #sidebar .active {
+ background-color: #FFFFFF;
+ border-left: 3px solid var(--primary-color);
+}
+
 #dashboard-nav ul li:hover {
   background-color: var(--primary-color);
   color: #FFFFFF

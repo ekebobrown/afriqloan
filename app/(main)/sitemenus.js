@@ -55,32 +55,9 @@ export function MainNav() {
 export function Services() {
     return (
         <>
-            <li><Link href="/loans/recovery" className="link text-white">Loan Recovery</Link></li>
+            <li><Link href="/loan/recovery" className="link text-white">Loan Recovery</Link></li>
             <li><Link href="/spaces/coworking" className="link text-white">Co-working</Link></li>
             <li><Link href="/accounts/jointsavings" className="link text-white">Joint Savings</Link></li>
-        </>
-    )
-}
-
-export function User() {
-    return (
-        <>
-            <li><Link href="/dashboard" className="link d-inline-flex align-items-center"><span className="fa-solid fa-chalkboard fa-fw me-2"></span>Dashboard</Link></li>
-            <li><Link href="/dashboard/loans" className="link d-inline-flex align-items-center"><span className="fa-solid fa-landmark fa-fw me-2"></span>Loans</Link></li>
-            <li><Link href="/dashboard/savings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-vault fa-fw me-2"></span>Savings</Link></li>
-            <li><Link href="/dashboard/listings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-elevator fa-fw me-2"></span>Listings</Link></li>
-            <li><Link href="/dashboard/inbox" className="link d-inline-flex align-items-center"><span className="fa-solid fa-envelope fa-fw me-2"></span>Inbox</Link></li>
-        </>
-    )
-}
-
-export function Info() {
-    return (
-        <>
-            <li><Link href="/dashboard/settings" className="link d-inline-flex align-items-center"><span className="fa-solid fa-gear fa-fw me-2"></span>Setting</Link></li>
-            <li><Link href="/dashboard/information" className="link d-inline-flex align-items-center"><span className="fa-solid fa-circle-info fa-fw me-2"></span>Information</Link></li>
-            <li><Link href="/dashboard/terms" className="link d-inline-flex align-items-center"><span className="fa-solid fa-shield-halved fa-fw me-2"></span>Security Terms</Link></li>
-            <li><span className="fa-solid fa-phone fa-fw me-2"></span>+234-800-300-333</li>
         </>
     )
 }

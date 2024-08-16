@@ -89,21 +89,24 @@ export function LoanRecovery() {
           </form>
       </div>
     )
-  }
+}
 
-  export function AccountOpening() {
 
+export function AccountOpening() {
+    const {pending} = useFormStatus()
     return (
-        <div>
-            <form className="d-flex flex-column w-100 p-5 bg-white rounded-5">
-                <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Full Name<input type="text" name="name" id="name" className="w-100" placeholder="e.g John Doe"/></label>
-                <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" id="phone" className="w-100" placeholder="e.g +234-801-234-5678"/></label>
-                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" id="email"  className="w-100" placeholder="e.g johndoe@gmail.com"/></label>
-                <input type="button" name="submit" id="submit" value="Send" className="btn btn-primary rounded-pill align-self-center"/>
-            </form>
-        </div>
+        <>
+            <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Full Name<input type="text" name="name" className="w-100" placeholder="e.g John Doe"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100" placeholder="e.g +234-801-234-5678"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">NIN<input type="number" name="nin" className="w-100" placeholder="NIN"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">BVN<input type="number" name="bvn" className="w-100" placeholder="BVN"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">Saving Goals<input type="number" name="goal" className="w-100" placeholder="Saving Goals"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">Deposit Amount<input type="number" name="deposit" className="w-100" placeholder="Deposit Amount"/></label>
+            <input type="button" name="submit" id="submit" value="Send" className="btn btn-primary rounded-pill align-self-center" disabled={pending} />
+        </>
   )
 }
+
 
 export function Login(){
     const {pending} = useFormStatus()
@@ -227,11 +230,11 @@ export function Registration() {
 
     return (
         <>
-            <div className="d-flex justify-content-center align-items-center gap-3">
+            <div className="align-self-stretch d-flex flex-column flex-md-row justify-content-center align-items-center column-gap-3 mb-5">
                 <h6 className="text-primary">Register as:</h6>
-                <div className="rounded-pill p-1 bg-secondary-subtle border border-1 border-primary">
-                    <button className={`btn ${account==='user'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('user')}>User</button>
-                    <button className={`btn ${account==='landlord'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('landlord')} >Landlord</button>
+                <div className="align-self-stretch rounded-pill p-1 bg-secondary-subtle border border-1 border-primary">
+                    <button className={`w-50 btn ${account==='user'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('user')}>User</button>
+                    <button className={`w-50 btn ${account==='landlord'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('landlord')} >Landlord</button>
                 </div>
             </div>
             <form action={action} className="d-flex flex-column w-100" autoComplete="no">

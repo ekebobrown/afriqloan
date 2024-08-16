@@ -24,14 +24,14 @@ export default async function Auth(session_token) {
 
     //Verify user session token and respond
     const payload = jwt.verify(session_token, process.env.JWT_SECRET_KEY)
-    const user = await connection.findOne({email: payload.email},{projection: {names:1, avatar:1, status:1}})
+    const user = await connection.findOne({email: payload.email},{projection: {names:1, avatar:1, status:1, priviledge:1}})
 
-    if(!user){
+    if(!user||user.status!=="activated"){
         cookies.remove("session_token")
         throw new Error("Invalid session information", {cause: {status: 401}})
     }
         return NextResponse.json({user: user},{status:200})
   }catch(error){
-      return NextResponse.json({error:error.message||"Error retrieving authentication information"},{status:error.cause.status||500})
+      throw new Error(error.message||"Error authenticating. Please try again.",{cause: {status:error.cause?.status||500}})
   }
 }

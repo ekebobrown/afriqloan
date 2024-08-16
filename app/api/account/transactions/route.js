@@ -23,6 +23,6 @@ export async function GET(request) {
                                 .toArray()
         return NextResponse.json(transactions)
     }catch(error){
-        return NextResponse.json({error: error.message||"There was an error retrieving your balance!"}, {status: error.cause.status||500})
+        throw new Error(error.message||"There was an error retrieving your balance!", {cause: {status: error.cause?.status||500}})
     }
 }

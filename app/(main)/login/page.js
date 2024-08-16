@@ -15,9 +15,9 @@ export default function Login() {
   return (
     <>
         <section id="form" className={`${styles.section} d-flex justify-content-center mx-auto text-primary`}>
-            <div className={`container-md d-flex flex-column justify-content-around bg-white rounded-5 p-5 row-gap-3`} style={{maxWidth:"600px"}}>
+            <div className={`container-md d-flex flex-column justify-content-around bg-white rounded-5 px-4 py-5 p-md-5 row-gap-3`} style={{maxWidth:"600px"}}>
                 <div className="d-flex flex-column align-items-center">
-                  <h1 className="fw-bold">{activation?'Account successfully activated':'Welcome to AfriqLoan'}</h1>
+                  <h1 className="fw-bold text-center">{activation?'Account successfully activated':'Welcome to AfriqLoan'}</h1>
                   <em>Login to continue</em>
                 </div>
                 <LoginForm />

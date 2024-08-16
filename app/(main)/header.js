@@ -1,4 +1,4 @@
-import { MainNav } from "@/app/(main)/navigations"
+import { MainNav } from "@/app/(main)/sitemenus"
 
 export default function Header() {
   return (

@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }) {
       <Header />
       <main className="d-flex flex-column flex-md-row bg-white" style={{minHeight:'92vh'}}>
         <Sidebar />
-        <div className="col-12 col-md-9">
+        <div className="col-12 col-md-10 bg-tertiary">
           {children}
         </div>
       </main>
