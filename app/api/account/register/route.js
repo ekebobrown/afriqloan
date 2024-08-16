@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 
 import Connection from "@/app/lib/db"
 import bcrypt from "bcryptjs"
+import jwt from 'jsonwebtoken';
+import Mailer from "@/app/lib/mailer";
 
 export const revalidate = 3600
 
@@ -25,7 +27,19 @@ export async function POST(request) {
         const salt = await bcrypt.genSalt(10);
         const hashpassword = await bcrypt.hash(formData.password, salt);
         formData.password = hashpassword
-        await users.insertOne(formData)
+        const newUser = await users.insertOne(formData)
+        if(newUser.acknowledged){
+            const payload = {
+                email:formData.email,
+                role:formData.role,
+                status:formData.status,
+                user:formData._id
+            }
+            const token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
+            await activation.insertOne({token:token, user:formData._id, createdAt: new Date()})
+            Mailer(token, "Email Activation", formData.email)
+        }
+
         //Return response
         return NextResponse.json({message:"Account created successfully. Redirecting shortly..."},{status:200})
     }catch(error){

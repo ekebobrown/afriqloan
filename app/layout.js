@@ -2,8 +2,8 @@ import { Raleway } from "next/font/google";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import 'react-loading-skeleton/dist/skeleton.css'
 
-import React from 'react'
 import IsOffline from '@/app/lib/isoffline'
 import Bootstrap from "@/app/components/bootstrap";
 

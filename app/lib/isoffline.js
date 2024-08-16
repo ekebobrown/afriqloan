@@ -20,8 +20,8 @@ export default function IsOffline() {
   });
 
   return (
-    <>
-        {!isOnline && <div className="px-4 py-1 bg-danger w-100 text-center text-white sticky-top" style={{transition:'all 2s ease-out'}}><i className="fa-solid fa-link-slash me-2"></i>You are currently working offline</div>}
-    </>
+    <div style={{transition:'all 2s ease-out'}}>
+        {!isOnline && <div className="px-4 py-1 bg-danger w-100 text-center text-white sticky-top"><i className="fa-solid fa-link-slash me-2"></i>You are currently working offline</div>}
+    </div>
   )
 };

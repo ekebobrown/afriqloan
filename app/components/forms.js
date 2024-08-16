@@ -1,27 +1,18 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect, useRef, useId } from 'react'
 import { useFormStatus, useFormState } from 'react-dom'
-import { useSearchParams } from 'next/navigation'
-
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 import { submitForm, recoverPassword } from '@/app/lib/actions'
-
-export function NewsletterForm() {
-    const {pending} = useFormStatus()
-    return (
-        <>
-            <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Name<input type="text" name="names" className="w-100" placeholder="e.g John Doe" disabled={pending} required /></label>
-            <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100" placeholder="e.g +234-801-234-5678" disabled={pending} required /></label>
-            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100" placeholder="e.g johndoe@gmail.com" disabled={pending} required /></label>
-            <button type="submit" name="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?<><i className="fa-solid fa-circle-notch fa-spin me-2"></i>Please Wait</>:"Send"}</button>
-        </>
-    )
-}
+import { Submit } from '@/app/components/buttons'
 
 export function Newsletter() {
+    useEffect(()=>{
+        console.log(document.cookies)
+    },[])
+
     async function submitForm(formData){
         const subscriberInfo = {
             names: formData.get('names'),
@@ -29,7 +20,7 @@ export function Newsletter() {
             email: formData.get('email'),
             active: true
         }
-        const response = await fetch('http://localhost/api/newsletter', {
+        const response = await fetch(`/api/newsletter`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,152 +45,28 @@ export function Newsletter() {
     }
 
     return (
-        <div>
-            <form action={submitForm} className="d-flex flex-column w-100 px-4 px-md-5 pt-5 pb-4 bg-white rounded-5">
-                <NewsletterForm />
-                <em id="alert" className="text-center pt-1">&nbsp;</em>
-            </form>
-        </div>
+        <form action={submitForm} className="d-flex flex-column w-100 px-4 px-md-5 pt-5 pb-4 bg-white rounded-5">
+            <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Name<input type="text" name="names" className="w-100" placeholder="e.g John Doe" required /></label>
+            <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100" placeholder="e.g +234-801-234-5678" required /></label>
+            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100" placeholder="e.g johndoe@gmail.com" required /></label>
+            <Submit>Submit</Submit>
+            <em id="alert" className="text-center pt-1">&nbsp;</em>
+        </form>
   )
 }
 
-export function LoanRecovery() {
-    const inputId = useId()
+export function AccountOpening({user, type}) {
     return (
-      <div>
-          <form className="d-flex flex-column w-100 p-4 bg-white rounded-3 gap-3" autoComplete="no">
-            <div className="d-flex flex-column flex-md-row justify-content-between gap-4">
-                <label className="d-flex flex-column flex-fill align-items-start fs-6">Firt Name<input type="text" name="firstname" id="firstname" className="w-100" placeholder="e.g John"/></label>
-                <label className="d-flex flex-column flex-fill align-items-start fs-6">Last Name<input type="text" name="lastname" id="lastname" className="w-100" placeholder="e.g Doe"/></label>
-            </div>
-            <label className="d-flex flex-column flex-fill align-items-start fs-6">Organization<input type="text" name="organization" id="organization" className="w-100" placeholder="Organization" aria-describedby={`${inputId}-organization`} /></label>
-            <div className="">
-                <i className="fa-solid fa-circle-info fa-pull-left me-2"></i>
-                <small id={`${inputId}-organization`}>If you would like to work with us, please enter the name of the business that you represent. If you would like to repay your loan, kindly enter the name of the loan agency that provided your loan.</small>
-            </div>
-            <label className="d-flex flex-column flex-fill align-items-start fs-6">Purpose<input type="text" name="purpose" id="purpose" className="w-100" placeholder="Debt Recovery"/></label>
-                <label className="d-flex flex-column align-items-start ">Contact Phone Number<input type="phone" name="phone" id="phone" className="w-100" placeholder="+234-812-345-6789"/></label>
-                <label className="d-flex flex-column align-items-start ">E-mail<input type="email" name="email" id="email"  className="w-100" placeholder="name@domain.tld"/></label>
-                <div className="">
-                    <i className="fa-solid fa-circle-info fa-pull-left me-2"></i>
-                    <small> Kindly provide your official email address if you represent an organisation. For personal enquiries please provide your personal email address.</small>
-                </div>
-                <label className="d-flex flex-column align-items-start">How Can We Help You<textarea rows={10} name="description" id="description" className="w-100" resized="false" placeholder="Kindly provide a narration of what you would like us to assist you with"/></label>
-              <input type="button" name="submit" id="submit" value="Send" className="btn btn-primary rounded-pill align-self-center"/>
-          </form>
-      </div>
-    )
-  }
-
-  export function AccountOpening() {
-
-    return (
-        <div>
-            <form className="d-flex flex-column w-100 p-5 bg-white rounded-5">
-                <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Full Name<input type="text" name="name" id="name" className="w-100" placeholder="e.g John Doe"/></label>
-                <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" id="phone" className="w-100" placeholder="e.g +234-801-234-5678"/></label>
-                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" id="email"  className="w-100" placeholder="e.g johndoe@gmail.com"/></label>
-                <input type="button" name="submit" id="submit" value="Send" className="btn btn-primary rounded-pill align-self-center"/>
-            </form>
-        </div>
-  )
-}
-
-export function Login(){
-    const {pending} = useFormStatus()
-    return(
-        <>
-            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" disabled={pending} required /></label>
-            <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password" className="w-100 rounded-2" placeholder="************" disabled={pending} required /></label>
-            <button type="submit" name="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?"Signing in...":"Sign In"}</button>
-        </>
-    )
-}
-
-export function LoginForm() {
-    const router = useRouter()
-    async function submitForm(formData) {
-        const details = {
-            email: formData.get('email'),
-            password: formData.get('password'),
-        }
-
-        const response = await fetch('/api/account/login',{
-            method: 'POST',
-            body: JSON.stringify(details)
-        })
-
-        const data = await response.json()
-        const elem = document.getElementById("alert")
-
-        if(response.ok){
-            elem.innerHTML = `<span class='text-success'>${data.message}</span>`
-            router.replace("/dashboard")
-        }else{
-            elem.innerHTML = `<span class='text-danger'>${data.error}</span>`
-            setTimeout(()=>{
-                elem.innerHTML = "&nbsp;"
-            }, 5000)
-        }
-      }
-
-    return (
-        <>
-            <form action={submitForm} className="d-flex flex-column w-100">
-                <Login />
-            </form>
-        </>
-    )
-}
-
-export function RecoveryForm(){
-    const {pending} = useFormStatus()
-    return(
-        <>
-            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" disabled={pending} required /></label>
-            <button type="submit" name="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?"Submitting...":"Submit"}</button>
-        </>
-    )
-}
-
-export function  PasswordRecovery() {
-    const [data, action] = useFormState(recoverPassword, {})
-    const router = useRouter()
-
-    return(
-        <>
-            <form action={action} className="d-flex flex-column w-100">
-                <RecoveryForm />
-            </form>
-            <small id="info" className={`${data?.success?'text-success':'text-danger'} text-center`}>{data?.message}</small>
-        </>
-    )
-}
-
-
-export function RegistrationForm({account}){
-    const {pending} = useFormStatus()
-    return(
-        <>
-            <label className="d-flex flex-column align-items-start mb-3 fs-6">Full name<input type="text" name="names" className="w-100 rounded-2" placeholder="e.g John Doe" disabled={pending} required/></label>
-            <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100 rounded-2" placeholder="+234 801 234 5678" disabled={pending} required/></label>
-            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" disabled={pending} required/></label>
-            {account==="landlord" &&
-                <label className="d-flex flex-column align-items-start mb-3">Space Location
-                    <select name="location" className="w-100 rounded-2">
-                        <option value="Uyo">Uyo</option>
-                    </select>
-                </label>
-            }
-            <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password"  className="w-100 rounded-2" placeholder="************" disabled={pending} required/></label>
-            <label className="d-flex flex-column align-items-start mb-3">Confirm Password<input type="password" id="confirm-password"  className="w-100 rounded-2" placeholder="***********" disabled={pending} required/></label>
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
-                <label className="d-flex flex-row align-items-start mb-3 align-items-center"><input type="checkbox" className="me-2" disabled={pending} required/><span>I Agree To The&nbsp;<Link href="/terms-and-condition" className="link" required>Terms and Condition</Link>&nbsp;to AfriqLoan</span></label>
-                <Link href="/login" className="link mb-3">Alread Registered?</Link>
-            </div>
-            <button type="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?<>Submitting<i className="fa-solid fa-circle-notch fa-spin ms-2"></i></>:"Submit"}</button>
-            <input type="hidden" name="type" value={`${account==="landlord"?"landlord":"user"}`} />
-        </>
+        <form className="row row-cols-1 row-cols-md-2 row-gap-5 justify-content-center">
+            <label className="d-flex flex-column align-items-start fs-6">Your Full Name<input type="text" name="name" className="rounded-3 w-100" defaultValue={user?.names} disabled /></label>
+            <label className="d-flex flex-column align-items-start">Phone Number<input type="phone" name="phone" className="rounded-3 w-100" defaultValue={user?.phone} disabled /></label>
+            <label className="d-flex flex-column align-items-start">NIN<input type="number" name="nin" className="rounded-3 w-100" placeholder="NIN"/></label>
+            <label className="d-flex flex-column align-items-start">BVN<input type="number" name="bvn" className="rounded-3 w-100" placeholder="BVN"/></label>
+            <label className="d-flex flex-column align-items-start">Saving Goals<input type="number" name="goal" className="rounded-3 w-100" placeholder="Saving Goals"/></label>
+            <label className="d-flex flex-column align-items-start">Deposit Amount<input type="number" name="deposit" className="rounded-3 w-100" placeholder="Deposit Amount"/></label>
+            <input type="hidden" name={`${type==="personal"?"personal":"joint"}`} />
+            <Submit>Create Account</Submit>
+        </form>
     )
 }
 
@@ -227,17 +94,90 @@ export function Registration() {
 
     return (
         <>
-            <div className="d-flex justify-content-center align-items-center gap-3">
+            <div className="align-self-stretch d-flex flex-column flex-md-row justify-content-center align-items-center column-gap-3 mb-5">
                 <h6 className="text-primary">Register as:</h6>
-                <div className="rounded-pill p-1 bg-secondary-subtle border border-1 border-primary">
-                    <button className={`btn ${account==='user'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('user')}>User</button>
-                    <button className={`btn ${account==='landlord'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('landlord')} >Landlord</button>
+                <div className="align-self-stretch rounded-pill p-1 bg-secondary-subtle border border-1 border-primary">
+                    <button className={`w-50 btn ${account==='user'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('user')}>User</button>
+                    <button className={`w-50 btn ${account==='landlord'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('landlord')} >Landlord</button>
                 </div>
             </div>
             <form action={action} className="d-flex flex-column w-100" autoComplete="no">
-                <RegistrationForm account={account}/>
+                <label className="d-flex flex-column align-items-start mb-3 fs-6">Full name<input type="text" name="names" className="w-100 rounded-2" placeholder="e.g John Doe" required/></label>
+                <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100 rounded-2" placeholder="+234 801 234 5678" required/></label>
+                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" required/></label>
+                {account==="landlord" &&
+                    <label className="d-flex flex-column align-items-start mb-3">Space Location
+                        <select name="location" className="w-100 rounded-2">
+                            <option value="Uyo">Uyo</option>
+                        </select>
+                    </label>
+                }
+                <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password"  className="w-100 rounded-2" placeholder="************" required/></label>
+                <label className="d-flex flex-column align-items-start mb-3">Confirm Password<input type="password" id="confirm-password"  className="w-100 rounded-2" placeholder="***********" required/></label>
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <label className="d-flex flex-row align-items-start mb-3 align-items-center"><input type="checkbox" className="me-2" required/><span>I Agree To The&nbsp;<Link href="/terms-and-condition" className="link" required>Terms and Condition</Link>&nbsp;to AfriqLoan</span></label>
+                    <Link href="/login" className="link mb-3">Alread Registered?</Link>
+                </div>
+                <input type="hidden" name="role" value={`${account==="landlord"?"Landlord":"User"}`} />
+                <input type="hidden" name="status" value="pending" />
+                <Submit>Submit</Submit>
             </form>
             <small id="info" className={`${state?.success?"text-success":"text-danger"}`}>{state?.message}</small>
+        </>
+    )
+}
+
+
+export function LoginForm() {
+    const router = useRouter()
+    const searchParams = useSearchParams().get("redirect")
+
+    async function submitForm(formData) {
+        const details = {
+            email: formData.get('email'),
+            password: formData.get('password'),
+        }
+
+        const response = await fetch('/api/account/login',{
+            method: 'POST',
+            body: JSON.stringify(details)
+        })
+
+        const data = await response.json()
+        const elem = document.getElementById("alert")
+
+        if(response.ok){
+            elem.innerHTML = `<span class='text-success'>${data.message}</span>`
+            router.replace(searchParams||"/dashboard")
+        }else{
+            elem.innerHTML = `<span class='text-danger'>${data.error}</span>`
+            setTimeout(()=>{
+                elem.innerHTML = "&nbsp;"
+            }, 5000)
+        }
+      }
+
+    return (
+        <form action={submitForm} className="d-flex flex-column w-100">
+            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" required /></label>
+            <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password" className="w-100 rounded-2" placeholder="************" required /></label>
+            <Submit>Sign In</Submit>
+        </form>
+    )
+}
+
+
+export function PasswordRecovery() {
+    const [data, action] = useFormState(recoverPassword, {})
+    const router = useRouter()
+
+    return(
+        <>
+            <form action={action} className="d-flex flex-column w-100">
+                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" required /></label>
+                <Submit>Submit</Submit>
+            </form>
+            <small id="info" className={`${data?.success?'text-success':'text-danger'} text-center`}>{data?.message}</small>
         </>
     )
 }
@@ -400,6 +340,34 @@ export function Loan() {
                 </>}
             </form>
         </div>
+    )
+}
+
+export function LoanRecovery() {
+    const inputId = useId()
+    return (
+      <div>
+          <form className="d-flex flex-column w-100 p-4 bg-white rounded-3 gap-3" autoComplete="no">
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-4">
+                <label className="d-flex flex-column flex-fill align-items-start fs-6">Firt Name<input type="text" name="firstname" id="firstname" className="w-100" placeholder="e.g John"/></label>
+                <label className="d-flex flex-column flex-fill align-items-start fs-6">Last Name<input type="text" name="lastname" id="lastname" className="w-100" placeholder="e.g Doe"/></label>
+            </div>
+            <label className="d-flex flex-column flex-fill align-items-start fs-6">Organization<input type="text" name="organization" id="organization" className="w-100" placeholder="Organization" aria-describedby={`${inputId}-organization`} /></label>
+            <div className="">
+                <i className="fa-solid fa-circle-info fa-pull-left me-2"></i>
+                <small id={`${inputId}-organization`}>If you would like to work with us, please enter the name of the business that you represent. If you would like to repay your loan, kindly enter the name of the loan agency that provided your loan.</small>
+            </div>
+            <label className="d-flex flex-column flex-fill align-items-start fs-6">Purpose<input type="text" name="purpose" id="purpose" className="w-100" placeholder="Debt Recovery"/></label>
+                <label className="d-flex flex-column align-items-start ">Contact Phone Number<input type="phone" name="phone" id="phone" className="w-100" placeholder="+234-812-345-6789"/></label>
+                <label className="d-flex flex-column align-items-start ">E-mail<input type="email" name="email" id="email"  className="w-100" placeholder="name@domain.tld"/></label>
+                <div className="">
+                    <i className="fa-solid fa-circle-info fa-pull-left me-2"></i>
+                    <small> Kindly provide your official email address if you represent an organisation. For personal enquiries please provide your personal email address.</small>
+                </div>
+                <label className="d-flex flex-column align-items-start">How Can We Help You<textarea rows={10} name="description" id="description" className="w-100" resized="false" placeholder="Kindly provide a narration of what you would like us to assist you with"/></label>
+              <input type="button" name="submit" id="submit" value="Send" className="btn btn-primary rounded-pill align-self-center"/>
+          </form>
+      </div>
     )
 }
 

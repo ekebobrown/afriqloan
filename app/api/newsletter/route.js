@@ -7,7 +7,7 @@ export async function GET(){
         const connection = await Connection()
         const subscribers = await connection
                             .db('afriqloan')
-                            .collection('newsletter_subscribers')
+                            .collection('newsletter_subscriptions')
                             .find({})
                             .toArray()
         return NextResponse.json(subscribers)
@@ -22,7 +22,7 @@ export async function POST(request) {
         const connection = await Connection()
         const collection = connection
                             .db('afriqloan')
-                            .collection('newsletter_subscribers')
+                            .collection('newsletter_subscriptions')
 
         const email = await collection.findOne({email:data.email})
         if(email){

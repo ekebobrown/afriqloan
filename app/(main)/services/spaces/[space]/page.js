@@ -4,7 +4,7 @@ import { SpaceCard } from "@/app/components/cards";
 import Connection from "@/app/lib/db";
 
 export const dynamic = 'auto'
-export const revalidate = 60
+export const revalidate = 120
 
 export async function generateStaticParams() {
     "use server"
@@ -51,7 +51,7 @@ export default async function Space({params}) {
                 ))}
             </div>
     }else{
-        content=<p className="text-danger">{spaces.error}</p>
+        content=<p className="text-danger">{spaces.error||"Nothing to see here."}</p>
     }
 
     return (

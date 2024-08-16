@@ -1,8 +1,4 @@
 'use server'
-
-import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
-
 import jwt from "jsonwebtoken"
 
 import Connection from "@/app/lib/db"
@@ -19,19 +15,22 @@ export default async function Auth(session_token) {
 
     //Check for user session token in request header
     if(!session_token){
-      throw new Error("You are not authorized to view this resource", {cause: {status: 401}})
+      throw new Error("User session information missing", {cause: {status: 401}})
     }
 
     //Verify user session token and respond
-    const payload = jwt.verify(session_token, process.env.JWT_SECRET_KEY)
-    const user = await connection.findOne({email: payload.email},{projection: {names:1, avatar:1, status:1}})
-
-    if(!user){
-        cookies.remove("session_token")
-        throw new Error("Invalid session information", {cause: {status: 401}})
+    let payload
+    jwt.verify(session_token, process.env.JWT_SECRET_KEY, (decoded, err)=>{
+        err?payload = err:payload = decoded
+    })
+    const user = await connection.findOne({email: payload.email},{projection: {names:1, avatar:1, status:1, role:1, phone:1}})
+    if(!payload||!user||user.status!=="activated"){
+      throw new Error("Invalid session information", {cause: {status:403}})
     }
-        return NextResponse.json({user: user},{status:200})
+
+    //Return user information on successful authentication and authorization
+    return {isAuthenticated: true, message: "Authentication Successful", user: JSON.parse(JSON.stringify(user))}
   }catch(error){
-      return NextResponse.json({error:error.message||"Error retrieving authentication information"},{status:error.cause.status||500})
+      return {isAuthenticated:false, message:error.message||"Error verifying session information"}
   }
 }

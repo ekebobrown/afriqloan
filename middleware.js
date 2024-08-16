@@ -1,18 +1,25 @@
 import { NextResponse } from "next/server"
+import { jwtVerify } from "jose"
 
 export async function middleware(request) {
     const path = request.nextUrl.pathname
-    const session_token = request.cookies.get('session_token')?.value
+    const token = request.cookies.get('session_token')?.value
 
-    if (!session_token && path.startsWith('/dashboard')) {
-        return NextResponse.redirect(new URL('/login', request.url))
+    try{
+      const tokenVerify = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET_KEY))
+      if (tokenVerify && (path.startsWith('/login')||path.startsWith('/register'))) {
+          return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
+    }catch(error){
+      if (path.startsWith('/login')||path.startsWith('/register')){
+        return null
       }
-
-    if (session_token && path.startsWith('/login'||'/register?asa=user')) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirect', path)
+      return NextResponse.redirect(loginUrl)
     }
   }
 
   export const config = {
-    matcher: ['/dashboard/:path*','/login', '/register']
+    matcher: ['/dashboard/:path*', '/login', '/register', '/account/:path*',]
   }

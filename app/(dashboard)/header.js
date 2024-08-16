@@ -5,14 +5,16 @@ import { cookies } from 'next/headers'
 import Auth from '@/app/lib/auth'
 import { logout } from '@/app/lib/actions'
 
+export const dynamic = "force-static"
+
 export default async function Header() {
   const session_token = cookies().get("session_token")?.value
-  const {user} = await Auth(session_token).then((res)=>res.json())
+  const {user} = await Auth(session_token)
 
   return (
     <header id="dashboard-nav" className="bg-light">
         <div className="d-flex align-items-center">
-          <div className="d-flex col-5 col-md-3 ps-4 ps-md-5">
+          <div className="d-flex col-5 col-md-2" style={{paddingLeft:'1.0rem'}}>
             <div className="d-flex">
               <button className={`navbar-toggler border-2 border-primary p-1 me-2`} data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                 <i className="fa-solid fa-bars text-primary"></i>
@@ -20,7 +22,7 @@ export default async function Header() {
               <Link className="navbar-brand-dark col-4 col-md-3 fs-3 fw-bolder text-primary" href="/">AfriqLoan</Link>
             </div>
           </div>
-          <div className="d-flex col-7 col-md-9 align-items-center justify-content-end flex-fill pe-4 py-4">
+          <div className="d-flex col-7 col-md-10 align-items-center justify-content-end flex-fill pe-4 py-4">
               <div className="d-flex flex-column align-items-end align-items-md-start position-relative flex-fill align-self-md-start">
                 <button type="button" className="border-0 bg-light d-inline-flex align-items-center gap-2 order-1 order-md-0" data-bs-toggle="collapse" data-bs-target="#dropdown" aria-controls="dropdown" aria-expanded="false">
                   <Image src={user?.avatar||"/assets/picture-placeholder.jpeg"} className="order-1 order-md-0" width={40} height={40} style={{borderRadius:"5px"}} alt="avatar"/>

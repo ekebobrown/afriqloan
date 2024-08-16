@@ -40,18 +40,17 @@ export async function POST(request){
             email: user.email,
             status: user.status
         }
-
         const session_token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
-        
+
         cookies().set({
             name: 'session_token',
             value: session_token,
             httpOnly: true,
             path: '/',
-            maxAge: 60*60
+            maxAge: 60*60*24
           })
 
-        revalidatePath("/(main)/", "layout")
+        revalidatePath("/", "layout")
         return NextResponse.json({message: "Sign in successful. Redirecting..."}, {status: 200})
     }catch(error){
         return NextResponse.json({error:error.message||"Error logging in, please try again."}, {status:error.cause?.status||500})

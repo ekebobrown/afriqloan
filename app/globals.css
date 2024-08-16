@@ -133,7 +133,7 @@ container-sm {
 /* Buttons */
 .btn {
   padding: 0.8rem 1.8rem !important;
-  border: 0 !important
+  border: 0
 }
 
 .btn-primary {
@@ -143,11 +143,11 @@ container-sm {
 
 .btn-primary:hover {
   background-color: var(--secondary-color) !important;
+  border: 2px solid var(--secondary-color) !important;
   color: var(--primary-color);
 }
 
 .btn-outline-primary {
-  border: 2px solid var(--primary-color) !important;
   color: var(--primary-color);
 }
 
@@ -265,25 +265,36 @@ button:focus {
   padding-left: 0 !important;
 }
 
+#sidebar li {
+  border-left: 3px solid #F8F9FA;
+}
+
+#sidebar li {
+  padding: 0.5rem 1rem
+}
+
+#sidebar li:hover, #sidebar .active {
+ background-color: #FFFFFF;
+ border-left: 3px solid var(--primary-color);
+}
+
 #dashboard-nav ul li:hover {
   background-color: var(--primary-color);
   color: #FFFFFF
 }
 
 /* Media Screens */
-@media (min-width: 500px) {
+@media (min-width: 768px) {
+  .border-right {
+    border-right: 5px solid #CCCCCC
+  }
+
   #dashboard-nav .navbar-toggler {
     display: none !important
   }
 }
 
-@media (min-width: 768px) {
-  .border-right {
-    border-right: 5px solid #CCCCCC
-  }
-}
-
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .border-bottom-sm {
     border-bottom: 5px solid #CCCCCC
   }

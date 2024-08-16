@@ -10,6 +10,7 @@ import { Newsletter } from "@/app/components/forms";
 import Clients from "@/app/components/clients";
 import Footer from "@/app/(main)/footer";
 import Testimonials from "@/app/components/testimonials";
+import { TestimonialsFallback } from "@/app/components/fallbacks";
 
 import image from "@/public/hero-image-3.png"
 
@@ -26,34 +27,34 @@ export default async function Home() {
       <main className="position-relative">
         <section id="hero" className={`${styles.hero} bg-primary mt-5 mt-md-0`}>
           <div className="container-md row flex-fill">
-            <div className="col-12 col-md-6 d-flex flex-column text-white align-items-start justify-content-center px-2 py-5 py-md-0">
+            <div className="col-12 col-md-6 d-flex flex-column text-white align-items-start justify-content-center px-2 py-5 pt-0 pt-md-5 py-md-0 order-1 order-md-0">
               <h1 className="display-2 fw-bold" style={{lineHeight: 1.1}}>Quick And Easy <span className="d-inline-flex flex-column text-secondary position-relative">Loan<Image src="/assets/underline.png" width={150} height={20} alt="underline" className="position-absolute w-100" style={{bottom:"-8px", left:"0px"}} /></span> For Your Financial Needs.</h1>
               <p className="fs-5">Our loan services offer a hassle-free and streamlined borrowing experience, providing you with the funds you need in a timely manner to meet your financial requirements.</p>
               <Link href={`/${session_token?'dashboard':'register'}`} className="btn btn-secondary rounded-pill fs-4" role="button">Get Started</Link>
             </div>
-            <div className="col-12 col-md-6 align-self-end position-relative p-0">
+            <div className="col-12 col-md-6 align-self-end position-relative p-0 order-0 order-md-1">
               <Image
                   src={image}
                   alt="hero"
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  style={{objectFit:'contain', objectPosition:'center', width:'120%', height:'120%'}}
+                  style={{objectFit:'contain', objectPosition:'center', width:'100%', height:'120%'}}
               />
             </div>
           </div>
         </section>
         <section id="services-card" className={`${styles.section} bg-white`}>
           <div className="container-md d-flex flex-column flex-md-row row-cols-1 row-cols-md-3 justify-content-around gap-4">
-            <ServiceCard image="/icons/loan-recovery.png" title="Loan Recovery" layout={1}>
+            <ServiceCard image="/icons/loan.png" title="Loan Recovery" layout={1}>
               <p>
                 Our team of expert adopt an ethical approach in our  collection strategy and ensure we surpass our expected result while maintaining the requirement of applicable regulation
               </p>
             </ServiceCard>
-            <ServiceCard image="/icons/joint-savings.png" title="Joint Savings" layout={1}>
+            <ServiceCard image="/icons/savings.png" title="Joint Savings" layout={1}>
               <p>
                 Couples can synchronise their budgets and expenditure to achieve financial chemistry 
               </p>
             </ServiceCard>
-            <ServiceCard image="/icons/co-working-living.png" title="Co-Working" layout={1}>
+            <ServiceCard image="/icons/space.png" title="Co-Working" layout={1}>
               <p>
                 Drop in and hot-desk in an open-plan workspace, or reserve your own dedicated desk in a shared office.
               </p>
@@ -109,12 +110,9 @@ export default async function Home() {
               </h1>
               <p>Echoes of satisfaction: Delivering into the story of Afriqloan’s satisfied customers; each testimonial is a testament</p>
             </div>
-            <div className="d-flex flex-column flex-md-row row-cols-3 gap-4">
-            <Suspense fallback={<p className='text-danger'>There was an error loading testimonials</p>}>
+            <Suspense fallback={<TestimonialsFallback />}>
               <Testimonials />
             </Suspense>
-            </div>
-            <Link href="#testimonials" className="btn btn-primary rounded-pill align-self-end">Write A Review</Link>
           </div>
         </section>
         <section id="aboutus" className={`${styles.section} bg-tertiary`}>

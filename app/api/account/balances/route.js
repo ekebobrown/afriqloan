@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
-
 import { ObjectId } from "bson"
 
 import Connection from "@/app/lib/db"
@@ -11,19 +9,16 @@ export async function GET(request) {
 
     try{
         //Validate session information
-        const response = await Auth(session_token)
-        if(!response.ok) {
-            const data = await response.json()
-            throw new Error(data.error, {cause: {status: data.status}})
-        }
+        const { user } = await Auth(session_token)
+
         //Establich database connection and retrieve account balances
         const collections = await Connection("afriqloan", "users")
-        const balances = await collections
-                                .find({_id: new ObjectId('66aec861f551ee571c81d0fa')})
-                                .project({account:1})
+        const account = await collections
+                                .find({_id: new ObjectId(user._id)})
+                                .project({names:1, phone:1, accounts:1})
                                 .toArray()
 
-        return NextResponse.json(balances)
+        return NextResponse.json({user: account})
     }catch(error){
         return NextResponse.json({error: error.message||"There was an error retrieving your balance!"}, {status:error.cause.status||500, ok:false})
     }

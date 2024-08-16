@@ -7,6 +7,37 @@ import Link from 'next/link'
 
 import Skeleton from 'react-loading-skeleton'
 
+export function Token({title, balance }){
+    const [view, setView] = useState({})
+    const amountFormat = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', currencyDisplay: 'symbol' })
+
+    useEffect(()=>{
+        setView({...view, ['title']: JSON.parse(window.localStorage.getItem(`${title}_balance_show`))})
+    },[])
+
+    function toggleView() {
+        setView({...view, ['title']:!view['title']})
+        window.localStorage.setItem(`${title}_balance_show`, !view['title'])
+    }
+
+    return (
+        <div className="col-12 col-md-4 d-flex flex-column bg-light p-4 rounded-4 gap-3 fs-4 overflow-x-hidden border border-4 border-primary shadow-sm">
+            <h5 className="text-truncate fw-bold">{title}</h5>
+            <div className="d-inline-flex align-items-center fs-5 fw-semibold">
+                {view['title']?amountFormat.format(balance):"**************"}
+                <i className="fa-regular fa-eye ms-2 align-text-top" onClick={toggleView} role="button"></i>
+            </div>
+            <div className="d-flex align-items-center justify-content-end">
+                {title.includes('Joint')&&<Link href="#" className="link fs-6 me-auto" scroll={false}>Invite Others</Link>}
+                {!title.includes('Wallet') && <><Link href={`/dashboard/fund?q=${title}`}  className="link fa-solid fa-square-plus me-2"></Link>
+                <span>deposit</span></>}
+                {!title.includes('Joint') && <i className="fa-solid fa-database ms-auto"></i>}
+            </div>
+        </div>
+    )
+}
+
+
 export function ServiceCard({image, title, children, layout}) {
   return (
     <div className="bg-tertiary rounded-5 px-4 py-5">
@@ -62,48 +93,34 @@ export function Testimonial ({avatar = "/assets/picture-placeholder.jpeg", layou
             <div className={`d-flex ${layout===1?'flex-column flex-fill align-items-start justify-content-start':'flex-row align-items-end'} mb-2`}>
                 <div className={`${layout===1?'mb-auto':''} me-4`} style={{height:80, width:80, borderRadius:"50%", overflow:"hidden"}}>
                     <Image
-                        src={avatar||<Skeleton />}
+                        src={avatar}
                         alt={author}
                         width={80}
                         height={80}
                     />
                 </div>
-                <div className="fs-3 text-primary fw-semibold my-2">
-                    {author||<Skeleton />}
+                <div className="fs-3 text-primary fw-bold my-2">
+                    {author}
                 </div>
             </div>
             <div className="fs-6">
-                {children||<Skeleton count={3}/>}
+                {children}
             </div>
         </div>
     )
 }
 
-export function Token({title, balance }){
-    const [view, setView] = useState({})
-    const amountFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'NGN', currencyDisplay: 'symbol' })
-
-    useEffect(()=>{
-        setView({...view, ['title']: JSON.parse(window.localStorage.getItem(`${title}_balance_show`))})
-    },[])
-
-    function toggleView() {
-        setView({...view, ['title']:!view['title']})
-        window.localStorage.setItem(`${title}_balance_show`, !view['title'])
-    }
-
+export function TestimonialsFallbackCard ({ layout }){
     return (
-        <div className="d-flex flex-column bg-light p-4 rounded-4 flex-fill gap-3 fs-4 overflow-x-hidden">
-            <span className="text-truncate">{title} Balance</span>
-            <div className="d-inline-flex align-items-center fs-5 fw-semibold">
-                {view['title']?amountFormat.format(balance):"**************"}
-                <i className="fa-regular fa-eye ms-2 align-text-top" onClick={toggleView} role="button"></i>
+        <div className="d-flex flex-column bg-secondary-subtle rounded-3 px-4 py-3 mb-4 h-100">
+            <div className={`d-flex ${layout===1?'flex-column flex-fill align-items-start justify-content-start':'flex-row align-items-end'} mb-2`}>
+                <Skeleton width={80} height={80} className={`${layout===1?'mb-auto':''} me-4 rounded-circle`}/>
+                <div className="flex-fill d-flex flex-row fs-3 fw-semibold my-2">
+                    <Skeleton width={120} inline={true} className="rounded-pill me-2" />
+                    <Skeleton width={80} inline={true} className="rounded-pill" />
+                </div>
             </div>
-            <div className="d-flex align-items-center justify-content-end">
-                {!title.includes('Wallet') && <><Link href={`/dashboard/fund?q=${title}`}  className="link fa-solid fa-square-plus me-2"></Link>
-                <span className="me-auto">deposit</span></>}
-                <i className={`fa-solid fa-${!title.includes('Contribution')?'database':'money-bill'}`}></i>
-            </div>
+            <Skeleton height={10} count={2.5} className="fs-5 rounded-pill" />
         </div>
     )
 }

@@ -4,10 +4,11 @@ import { v7 as uuidv7 } from 'uuid';
 import jwt from 'jsonwebtoken'
 
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 
 import Connection from "@/app/lib/db"
+import { redirect } from 'next/dist/server/api-utils';
 
 export async function getTestimonies(){
     "use server"
@@ -34,6 +35,16 @@ export async function submitForm(state, formData) {
     const data = await response.json()
 
     if (response.ok) {
+        if(data?.session_token) {
+            cookies().set({
+                name: 'session_token',
+                value: data.session_token,
+                httpOnly: true,
+                path: '/',
+                maxAge: 60*60*24
+            })
+            NextResponse.redirect("/dashboard")
+        }
         return ({...state,
             success: true,
             message: data.message,
@@ -78,7 +89,6 @@ export async function emailActivation(email){
             message: "E-mail sent successfully"
         }
     }catch(error){
-        console.log(error.message)
         return {
             success: false,
             message: error.message
