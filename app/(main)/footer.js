@@ -1,11 +1,11 @@
 import Link from 'next/link'
 
-import Brand from '../components/brand'
-import { Services } from './navigations'
+import Brand from '@/app/components/brand'
+import { Services } from '@/app/(main)/sitemenus'
 
 export function Footer() {
   return (
-    <div className="py-5 text-white">
+    <footer className="py-5 text-white">
       <div className="container-md d-flex flex-column flex-md-row py-5 px-4">
         <div className="col-12 col-md-6 mb-5 mb-md-0 pe-md-5">
           <div className="d-flex flex-column pe-md-5">
@@ -40,7 +40,7 @@ export function Footer() {
           </div>
        </div>
       </div>
-    </div>
+    </footer>
   )
 }
 

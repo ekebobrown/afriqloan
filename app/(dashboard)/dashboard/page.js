@@ -1,85 +1,60 @@
 import Link from 'next/link'
-import { cookies } from 'next/headers'
-
-import { ObjectId } from 'mongodb'
-
-import { Token } from '@/app/components/cards'
-
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 export default async function Dashboard() {
-  const session_token = cookies().get("session_token")?.value
-  const currencyFormat = new Intl.NumberFormat('en-US', {style:'currency', currency:'NGN'})
-
-  const [balances] = await fetch(`${process.env.SITE_URL}/api/account/balances`, {
-    headers: {
-      Authorization: `Bearer ${session_token}`
-    }
-  }).then((response) => response.json())
-
-  const transactions = await fetch(`${process.env.SITE_URL}/api/account/transactions`, {
-    headers: {
-      Authorization: `Bearer ${session_token}`
-    }
-  }).then((response)=>response.json())
-  
-
   return (
-    <div className="">
-      <section className="d-flex flex-column bg-primary p-5 gap-4">
+    <div className="bg-primary h-100">
+      <section id="services" className="d-flex flex-column p-5 gap-4">
         <div className="d-flex flex-column flex-md-row justify-content-between gap-3">
-          <h4 className="text-white">Hello Welcome</h4>
-          <div className="d-flex btn-primary border border-2 border-white align-items-center rounded-pill text-white px-4 py-2 fs-5" role="button">
-            <i className="fa-solid fa-money-bill-transfer me-2"></i>
-            <span>Withdraw</span>
-          </div>
-          <Link href="/dashboard/fund?q=wallet" className="link d-flex btn-primary border border-2 border-white rounded-pill text-white align-items-center px-4 py-2 fs-5" role="button">
-            <i className="fa-regular fa-square-plus me-2"></i>
-            <span>Fund Wallet</span>
-          </Link>
+          <h4 className="text-white">Hello Welcome!</h4>
         </div>
-        <div className="d-flex flex-column flex-md-row gap-3 row-cols-1 row-cols-md-3">
-          {balances.account?.map((account)=>(
-              <Token  key={account.type} title={account.type} balance={account.balance} />
-          ))}
-        </div>
-      </section>
-      <section id="transaction" className="d-flex flex-column row-gap-3 px-3 py-5 p-md-5">
-        <div className="d-flex flex-column flex-md-row">
-          <div className="d-flex flex-column me-auto">
-            <h4>Transactions</h4>
-            <span>Your Recent Transaction History</span>
+        <div className="row gap-4 text-primary">
+          <div className="col-12 col-md-5 d-flex flex-column rounded-4 justify-content-between bg-white p-5 gap-4">
+            <h4>Co-working Mechant</h4>
+            <div className="d-flex flex-row align-items-center">
+              <div className="d-flex flex-column flex-xl-row me-auto gap-2">
+                <button className="btn btn-outline-primary rounded-pill fw-bold">Login</button>
+                <Link href="/register?asa=landlord" className="btn btn-outline-primary rounded-pill fw-bold">Register</Link>
+              </div>
+              <span className="d-flex justify-content-center align-items-center p-2 rounded-circle" style={{backgroundColor: '#8AF0FF', width: '45px', height: '45px'}}>
+                <i className="fa-solid fa-network-wired fa-fw fa-xl"></i>
+              </span>
+            </div>
           </div>
-          <div className="d-flex gap-3 border border-1 rounded-3 p-1 align-items-center fs-5">
-            <Link href="#" className="btn btn-primary">All</Link>
-            <Link href="#" className="link">Contributions</Link>
-            <Link href="#" className="link">Savings</Link>
+          <div className="col-12 col-md-5 d-flex flex-column rounded-4 justify-content-between bg-white p-5 gap-4">
+            <h4>Loan Recovery</h4>
+            <div className="d-flex flex-row align-items-center">
+              <div className="d-flex flex-column flex-xl-row me-auto gap-2">
+                <button className="btn btn-outline-primary rounded-pill fw-bold">Apply</button>
+              </div>
+              <span className="d-flex justify-content-center align-items-center p-2 rounded-circle" style={{backgroundColor: '#8AF0FF', width: '45px', height: '45px'}}>
+                <i className="fa-solid fa-money-bill-transfer fa-fw fa-xl"></i>
+              </span>
+            </div>
           </div>
-        </div>
-        <div className=" overflow-x-scroll" style={{scrollbarWidth:'none'}}>
-        <table className="table table-hover flex-fill border border-1 rounded-4 fs-5 text-nowrap">
-          <thead className="">
-            <tr className="table-light">
-              <th>Source</th>
-              <th>Destination</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-          {transactions.map((datum)=>(
-            <tr key={datum._id}>
-              <td>{datum.source}</td>
-              <td>{datum.destination}</td>
-              <td><div className="d-flex flex-column">{(new ObjectId(datum._id).getTimestamp()).toDateString()}<small className="text-primary" style={{fontSize: "0.8rem"}}>{(new ObjectId(datum._id).getTimestamp()).toLocaleTimeString()}</small></div></td>
-              <td>{currencyFormat.format(datum.amount)}</td>
-              <td>Ref-{datum._id}</td>
-            </tr>
-          ))}
-          </tbody>
-        </table>
+          <div className="col-12 col-md-5 d-flex flex-column rounded-4 justify-content-between bg-white p-5 gap-4">
+            <h4>Loan</h4>
+            <div className="d-flex flex-row align-items-center">
+              <div className="d-flex flex-column flex-xl-row me-auto gap-2">
+                <button className="btn btn-outline-primary rounded-pill fw-bold">Login</button>
+                <button className="btn btn-outline-primary rounded-pill fw-bold">Apply</button>
+              </div>
+              <span className="d-flex justify-content-center align-items-center p-2 rounded-circle" style={{backgroundColor: '#8AF0FF', width: '45px', height: '45px'}}>
+                <i className="fa-solid fa-hand-holding-dollar fa-fw fa-xl"></i>
+              </span>
+            </div>
+          </div>
+          <div className="col-12 col-md-5 d-flex flex-column rounded-4 justify-content-between bg-white p-5 gap-4">
+            <h4>Savings/Joint Account</h4>
+            <div className="d-flex flex-row align-items-center">
+              <div className="d-flex flex-column flex-xl-row me-auto gap-2">
+                <button className="btn btn-outline-primary rounded-pill fw-bold">Login</button>
+                <button className="btn btn-outline-primary rounded-pill fw-bold">Create</button>
+              </div>
+              <span className="d-flex justify-content-center align-items-center p-2 rounded-circle" style={{backgroundColor: '#8AF0FF', width: '45px', height: '45px'}}>
+                <i className="fa-solid fa-piggy-bank fa-fw fa-xl"></i>
+              </span>
+            </div>
+          </div>
         </div>
       </section>
     </div>

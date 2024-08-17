@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef, useId } from 'react'
 import { useFormStatus, useFormState } from 'react-dom'
+import { useSearchParams } from 'next/navigation'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-import { submitForm } from '@/app/lib/actions'
+import { submitForm, recoverPassword } from '@/app/lib/actions'
 
 export function NewsletterForm() {
     const {pending} = useFormStatus()
@@ -88,28 +89,31 @@ export function LoanRecovery() {
           </form>
       </div>
     )
-  }
+}
 
-  export function AccountOpening() {
 
+export function AccountOpening() {
+    const {pending} = useFormStatus()
     return (
-        <div>
-            <form className="d-flex flex-column w-100 p-5 bg-white rounded-5">
-                <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Full Name<input type="text" name="name" id="name" className="w-100" placeholder="e.g John Doe"/></label>
-                <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" id="phone" className="w-100" placeholder="e.g +234-801-234-5678"/></label>
-                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" id="email"  className="w-100" placeholder="e.g johndoe@gmail.com"/></label>
-                <input type="button" name="submit" id="submit" value="Send" className="btn btn-primary rounded-pill align-self-center"/>
-            </form>
-        </div>
+        <>
+            <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Full Name<input type="text" name="name" className="w-100" placeholder="e.g John Doe"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100" placeholder="e.g +234-801-234-5678"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">NIN<input type="number" name="nin" className="w-100" placeholder="NIN"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">BVN<input type="number" name="bvn" className="w-100" placeholder="BVN"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">Saving Goals<input type="number" name="goal" className="w-100" placeholder="Saving Goals"/></label>
+            <label className="d-flex flex-column align-items-start mb-3">Deposit Amount<input type="number" name="deposit" className="w-100" placeholder="Deposit Amount"/></label>
+            <input type="button" name="submit" id="submit" value="Send" className="btn btn-primary rounded-pill align-self-center" disabled={pending} />
+        </>
   )
 }
+
 
 export function Login(){
     const {pending} = useFormStatus()
     return(
         <>
-            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" disabled={pending} /></label>
-            <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password" className="w-100 rounded-2" placeholder="************" disabled={pending} /></label>
+            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" disabled={pending} required /></label>
+            <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password" className="w-100 rounded-2" placeholder="************" disabled={pending} required /></label>
             <button type="submit" name="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?"Signing in...":"Sign In"}</button>
         </>
     )
@@ -133,9 +137,7 @@ export function LoginForm() {
 
         if(response.ok){
             elem.innerHTML = `<span class='text-success'>${data.message}</span>`
-            setTimeout(()=>{
-                router.replace("/dashboard")
-            },500)
+            router.replace("/dashboard")
         }else{
             elem.innerHTML = `<span class='text-danger'>${data.error}</span>`
             setTimeout(()=>{
@@ -146,22 +148,52 @@ export function LoginForm() {
 
     return (
         <>
-            <form action={submitForm} className="d-flex flex-column w-100 row-gap-3">
+            <form action={submitForm} className="d-flex flex-column w-100">
                 <Login />
-                <Link href="/recover-password" className="link text-center">Forgot Password?</Link>
             </form>
-            <em id="alert" className="text-center">&nbsp;</em>
         </>
     )
 }
 
-export function RegistrationForm(){
+export function RecoveryForm(){
+    const {pending} = useFormStatus()
+    return(
+        <>
+            <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" disabled={pending} required /></label>
+            <button type="submit" name="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?"Submitting...":"Submit"}</button>
+        </>
+    )
+}
+
+export function  PasswordRecovery() {
+    const [data, action] = useFormState(recoverPassword, {})
+    const router = useRouter()
+
+    return(
+        <>
+            <form action={action} className="d-flex flex-column w-100">
+                <RecoveryForm />
+            </form>
+            <small id="info" className={`${data?.success?'text-success':'text-danger'} text-center`}>{data?.message}</small>
+        </>
+    )
+}
+
+
+export function RegistrationForm({account}){
     const {pending} = useFormStatus()
     return(
         <>
             <label className="d-flex flex-column align-items-start mb-3 fs-6">Full name<input type="text" name="names" className="w-100 rounded-2" placeholder="e.g John Doe" disabled={pending} required/></label>
             <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100 rounded-2" placeholder="+234 801 234 5678" disabled={pending} required/></label>
             <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" disabled={pending} required/></label>
+            {account==="landlord" &&
+                <label className="d-flex flex-column align-items-start mb-3">Space Location
+                    <select name="location" className="w-100 rounded-2">
+                        <option value="Uyo">Uyo</option>
+                    </select>
+                </label>
+            }
             <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password"  className="w-100 rounded-2" placeholder="************" disabled={pending} required/></label>
             <label className="d-flex flex-column align-items-start mb-3">Confirm Password<input type="password" id="confirm-password"  className="w-100 rounded-2" placeholder="***********" disabled={pending} required/></label>
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
@@ -169,13 +201,19 @@ export function RegistrationForm(){
                 <Link href="/login" className="link mb-3">Alread Registered?</Link>
             </div>
             <button type="submit" id="submit" className="btn btn-primary rounded-pill align-self-center" disabled={pending}>{pending?<>Submitting<i className="fa-solid fa-circle-notch fa-spin ms-2"></i></>:"Submit"}</button>
+            <input type="hidden" name="type" value={`${account==="landlord"?"landlord":"user"}`} />
         </>
     )
 }
 
 export function Registration() {
-    const [state, action] = useFormState(submitForm, {api: '/api/account/register', status: "pending", date: Date.now()})
+    const searchParams = useSearchParams()
+    const [account, setAccount] = useState(searchParams.get("asa")||"user")
+    const [state, action] = useFormState(submitForm, {api: '/api/account/register', status: "pending"})
     const router = useRouter()
+    //const session_token = document.cookie.split("; ").find((token)=>token.startsWith("session_token")).split("=")[1]
+
+    //console.log(session_token)
 
     if (state?.success) {
         setTimeout(()=>{
@@ -183,10 +221,24 @@ export function Registration() {
         }, 2000)
     }
 
+    function updateURL(type) {
+        const query = new URLSearchParams(searchParams.toString())
+        query.set('asa', type)
+        history.replaceState(null, '', `?${query.toString()}`)
+        setAccount(type)
+      }
+
     return (
         <>
+            <div className="align-self-stretch d-flex flex-column flex-md-row justify-content-center align-items-center column-gap-3 mb-5">
+                <h6 className="text-primary">Register as:</h6>
+                <div className="align-self-stretch rounded-pill p-1 bg-secondary-subtle border border-1 border-primary">
+                    <button className={`w-50 btn ${account==='user'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('user')}>User</button>
+                    <button className={`w-50 btn ${account==='landlord'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('landlord')} >Landlord</button>
+                </div>
+            </div>
             <form action={action} className="d-flex flex-column w-100" autoComplete="no">
-                <RegistrationForm />
+                <RegistrationForm account={account}/>
             </form>
             <small id="info" className={`${state?.success?"text-success":"text-danger"}`}>{state?.message}</small>
         </>

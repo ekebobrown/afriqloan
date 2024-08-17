@@ -84,6 +84,7 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  scroll-behavior: smooth !important;
 }
 
 html,
@@ -262,6 +263,19 @@ button:focus {
 #sidebar ul, #dashboard-nav ul {
   list-style-type: none;
   padding-left: 0 !important;
+}
+
+#sidebar li {
+  border-left: 3px solid #F8F9FA;
+}
+
+#sidebar li {
+  padding: 0.5rem 1rem
+}
+
+#sidebar li:hover, #sidebar .active {
+ background-color: #FFFFFF;
+ border-left: 3px solid var(--primary-color);
 }
 
 #dashboard-nav ul li:hover {
