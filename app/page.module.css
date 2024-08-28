@@ -7,6 +7,10 @@
 }
 
 .fh {
+  min-height: 82vh;
+}
+
+.fh1 {
   min-height: 70vh;
 }
 

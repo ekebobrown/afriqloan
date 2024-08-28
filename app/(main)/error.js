@@ -8,7 +8,7 @@ export default function Error({error, reset}) {
     <div className={`p-5 bg-tertiary ${styles.fh}`}>
         <h5>An error occured</h5>
         <p className="text-danger">(See the browser console for more information)</p>
-        <button className="btn btn-primary rounded-pill" onClick={reset}>Retry</button>
+        <button className="btn btn-primary rounded-pill px-4" onClick={reset}>Retry</button>
     </div>
   )
 }

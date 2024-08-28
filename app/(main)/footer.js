@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import Brand from '@/app/components/brand'
-import { Services } from '@/app/(main)/sitemenus'
+import { Services } from '@/app/(main)/navigations'
 
 export function Footer() {
   return (

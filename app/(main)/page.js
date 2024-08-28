@@ -5,12 +5,13 @@ import { Suspense } from "react";
 
 import styles from "@/app/page.module.css";
 
-import { ServiceCard } from "@/app/components/cards";
-import { Newsletter } from "@/app/components/forms";
+import Auth from "@/app/lib/auth";
 import Clients from "@/app/components/clients";
 import Footer from "@/app/(main)/footer";
 import Testimonials from "@/app/components/testimonials";
 import { TestimonialsFallback } from "@/app/components/fallbacks";
+import { Services } from "@/app/components/cards";
+import { Newsletter } from "@/app/components/forms";
 
 import image from "@/public/hero-image-3.png"
 
@@ -20,7 +21,7 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const session_token = cookies().get("session_token")?.value
+  const { isAuthenticated } = await Auth()
 
   return (
     <>
@@ -30,7 +31,7 @@ export default async function Home() {
             <div className="col-12 col-md-6 d-flex flex-column text-white align-items-start justify-content-center px-2 py-5 pt-0 pt-md-5 py-md-0 order-1 order-md-0">
               <h1 className="display-2 fw-bold" style={{lineHeight: 1.1}}>Quick And Easy <span className="d-inline-flex flex-column text-secondary position-relative">Loan<Image src="/assets/underline.png" width={150} height={20} alt="underline" className="position-absolute w-100" style={{bottom:"-8px", left:"0px"}} /></span> For Your Financial Needs.</h1>
               <p className="fs-5">Our loan services offer a hassle-free and streamlined borrowing experience, providing you with the funds you need in a timely manner to meet your financial requirements.</p>
-              <Link href={`/${session_token?'dashboard':'register'}`} className="btn btn-secondary rounded-pill fs-4" role="button">Get Started</Link>
+              <Link href={`/${isAuthenticated?'dashboard':'register'}`} className="btn btn-secondary rounded-pill fs-4 px-5" role="button">{isAuthenticated?"Goto Dashboard":"Get Started"}</Link>
             </div>
             <div className="col-12 col-md-6 align-self-end position-relative p-0 order-0 order-md-1">
               <Image
@@ -38,27 +39,28 @@ export default async function Home() {
                   alt="hero"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   style={{objectFit:'contain', objectPosition:'center', width:'100%', height:'120%'}}
+                  priority={true}
               />
             </div>
           </div>
         </section>
         <section id="services-card" className={`${styles.section} bg-white`}>
           <div className="container-md d-flex flex-column flex-md-row row-cols-1 row-cols-md-3 justify-content-around gap-4">
-            <ServiceCard image="/icons/loan.png" title="Loan Recovery" layout={1}>
+            <Services image="/icons/loan.png" title="Loan Recovery" layout={1}>
               <p>
                 Our team of expert adopt an ethical approach in our  collection strategy and ensure we surpass our expected result while maintaining the requirement of applicable regulation
               </p>
-            </ServiceCard>
-            <ServiceCard image="/icons/savings.png" title="Joint Savings" layout={1}>
+            </Services>
+            <Services image="/icons/savings.png" title="Joint Savings" layout={1}>
               <p>
                 Couples can synchronise their budgets and expenditure to achieve financial chemistry 
               </p>
-            </ServiceCard>
-            <ServiceCard image="/icons/space.png" title="Co-Working" layout={1}>
+            </Services>
+            <Services image="/icons/space.png" title="Co-Working" layout={1}>
               <p>
                 Drop in and hot-desk in an open-plan workspace, or reserve your own dedicated desk in a shared office.
               </p>
-            </ServiceCard>
+            </Services>
           </div>
         </section>
         <section id="clients" className={`${styles.section} bg-tertiary`}>
@@ -73,7 +75,7 @@ export default async function Home() {
               <div className=" order-1 order-md-0 d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"400px"}}>
                 <h2>Debt Recovery</h2>
                 <p className="fs-5 pe-md-4">When we handle your debt recovery, we integrate into your business to create effective, ethical strategies, delivering tangible and timely results.</p>
-                <Link href="/loans/recovery" className="btn btn-primary rounded-pill" role="button">Let&apos;s Help You</Link>
+                <Link href="/services/loanrecovery" className="btn btn-primary rounded-pill px-5" role="button">Let&apos;s Help You</Link>
               </div>
               <div className="col-12 col-md-6 order-0 order-md-1" style={{backgroundImage:"url('/loan-recovery.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%", minHeight:"250px"}}>
               </div>
@@ -82,7 +84,7 @@ export default async function Home() {
               <div className=" order-1 order-md-0 d-flex flex-column bg-tertiary justify-content-center align-items-start col-12 col-md-6 p-3 p-md-5" style={{minHeight:"400px"}}>
                 <h3><strong>Joint Savings</strong> (Ajó)</h3>
                 <p className="fs-5 pe-md-4">Take your partnership to the next level and manage a united financial vision with one account that’s twice as nice.</p>
-                <Link href="/account" className="btn btn-primary rounded-pill">Open Joint Account</Link>
+                <Link href="/services/savings" className="btn btn-primary rounded-pill px-4">Open Joint Account</Link>
               </div>
               <div className="col-12 col-md-6 order-0 order-md-1" style={{backgroundImage:"url('/joint-savings.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%", minHeight:"250px"}}>
               &nbsp;
@@ -93,8 +95,8 @@ export default async function Home() {
                 <h3>Co-working</h3>
                 <p className="fs-5 pe-md-4">Work along like-minded professionals in our vibrant coworking spaces in Lagos, with break out areas and networking events to foster collaboration and growth.</p>
                 <div className="d-flex flex-column flex-md-row w-100">
-                  <Link href="/register?asa=landlord" className="btn btn-primary rounded-pill me-md-3 mb-3" role="button">Register As Landlord</Link>
-                  <Link href="/spaces/coworking" className="btn btn-outline-primary rounded-pill mb-3" role="button">Explore</Link>
+                  <Link href="/register?asa=landlord" className="btn btn-primary rounded-pill border border-2 border-primary me-md-3 mb-3 px-4" role="button">Register As Landlord</Link>
+                  <Link href="/services/spaces/coworking" className="btn btn-outline-primary rounded-pill border-2 border-primary mb-3 px-5" role="button">Explore</Link>
                 </div>
               </div>
               <div className="col-12 col-md-6 order-0 order-md-1" style={{backgroundImage:"url('/office-space.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%", minHeight:"250px"}}>

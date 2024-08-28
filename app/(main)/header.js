@@ -1,9 +1,9 @@
-import { MainNav } from "@/app/(main)/sitemenus"
+import { Main } from "@/app/(main)/navigations"
 
 export default function Header() {
   return (
-    <>
-        <MainNav />
-    </>
+    <header className="sticky-top">
+        <Main />
+    </header>
   )
 }

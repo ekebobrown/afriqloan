@@ -6,12 +6,12 @@ export default function notFound() {
   return (
     <>
       <section className={`bg-white`}>
-        <div className={`${styles.hero} container-md d-flex flex-column flex-md-row justify-content-center gap-2`}>
-          <h3 className="border-end border-2 pe-2">404</h3>
+        <div className={`${styles.fh1} container-md d-flex flex-column flex-md-row justify-content-center align-items-center gap-2`}>
+          <h3 className="border-end border-2 pe-2 align-self-center">404</h3>
           Page Not Found
         </div>
       </section>
-      <div className="position-absolute bottom-0 start-0 w-100 bg-primary">
+      <div className="bg-primary">
         <CopyrightSocial />
       </div>
     </>
