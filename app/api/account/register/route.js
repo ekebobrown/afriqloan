@@ -1,48 +1,51 @@
 import { NextResponse } from "next/server"
+import jwt from 'jsonwebtoken';
+import bcrypt from "bcryptjs"
 
 import Connection from "@/app/lib/db"
-import bcrypt from "bcryptjs"
-import jwt from 'jsonwebtoken';
-import Mailer from "@/app/lib/mailer";
-
-export const revalidate = 3600
+import { Activation } from "@/app/lib/mailer";
 
 export async function POST(request) {
-    const formData = await request.json()
+    const data = await request.json()
     try{
         //Check for database connection establishment
         const users = await Connection('afriqloan', 'users')
-        const activation = await Connection('afriqloan', 'pending_activations')
-
-        if(!users.s || !activation.s){
-            const response = await users.json()
-            throw new Error(response.error, {cause: {code: 500}})
+        const activation = await Connection('afriqloan', 'email_activations')
+        //Check if phone number is already registered
+        const number = await users.findOne({"contact.phone":data.phone})
+        if(number){
+            throw new Error("A user already exist with this phone number.", {code: 403})
         }
         //Check if e-mail is already registered
-        const user = await users.findOne({email:formData.email})
-        if(user){
-            throw new Error("E-mail already registered on this application", {cause: {code: 403}})
+        const email = await users.findOne({"contact.email":data.email})
+        if(email){
+            throw new Error("E-mail already registered on this application", {code: 403})
         }
         //Encrypt user password
-        const salt = await bcrypt.genSalt(10);
-        const hashpassword = await bcrypt.hash(formData.password, salt);
-        formData.password = hashpassword
-        const newUser = await users.insertOne(formData)
-        if(newUser.acknowledged){
-            const payload = {
-                email:formData.email,
-                role:formData.role,
-                status:formData.status,
-                user:formData._id
-            }
-            const token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
-            await activation.insertOne({token:token, user:formData._id, createdAt: new Date()})
-            Mailer(token, "Email Activation", formData.email)
+        const salt = await bcrypt.genSalt(10)
+        const hashpassword = await bcrypt.hash(data.password, salt)
+        data.contact = {email:data.email, phone:data.phone}
+        data.password = {current: hashpassword}
+        delete data.email
+        delete data.phone
+        //Insert user into the database and confirm
+        const user = await users.insertOne(data)
+        if(!user.acknowledged){
+            throw new Error("Error creating user account")
         }
-
-        //Return response
-        return NextResponse.json({message:"Account created successfully. Redirecting shortly..."},{status:200})
+        //Create an activation token and send to user's supplied email for activation
+        const payload = {
+            user:user._id,
+            email:user.email,
+            role:user.role,
+            status:user.status
+        }
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
+        await activation.insertOne({token:token, user:data._id, timestamp: new Date()})
+        //Send activation email to user and return response
+        const response = await Activation(token, "Email Account Activation", "activation", data.contact.email)
+        return NextResponse.json({message:"Account created successfully. Redirecting shortly..."}, {status:201})
     }catch(error){
-        return NextResponse.json({error:error.message||"An error occured trying to create an account. Try again!"},{status:error.cause.code||500, ok: false})
+        return NextResponse.json({error:error.message||"An error occured trying to create your account. Please try again!"}, {status:error?.code||500})
     }
 }

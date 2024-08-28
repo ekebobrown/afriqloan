@@ -1,8 +1,7 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import { NextResponse } from 'next/server';
 
 if (!process.env.DB_CONNECTION_STRING) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+  throw new Error('Missing environment variable: "DB_CONNECTION_STRING"');
 }
 
 const uri = process.env.DB_CONNECTION_STRING;
@@ -13,30 +12,20 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
-  monitorCommands:true
+  monitorCommands:true,
+  maxIdleTimeMS:10000
 });
 
-async function Connection(db, coll) {
-  var connection = null
-  try {
-    connection = await client.connect();
-    if(db){
-      connection = connection.db(db)
-      if(coll){
-        connection = connection.collection(coll)
-        return connection
+export default async function Connection(db, coll) {
+    try{
+      if(db){
+        if(coll){
+          return client.db(db).collection(coll)
+        }
+        return client.db(db)
       }
-      return connection
+      return client
+    }catch(error){
+      throw new Error("Connection error. Please check your network and try again!")
     }
-
-    if(!connection.s) {
-      throw new Error("Error connecting to database. Please check your network and try again")
-    }
-
-    return connection
-  } catch(error){
-    throw new Error(error.message)
-  }
 }
-
-export default Connection

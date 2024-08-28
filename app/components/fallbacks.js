@@ -1,58 +1,11 @@
 "use client"
 import Skeleton from "react-loading-skeleton"
-import { useId } from "react"
 
 import { TestimonialsFallbackCard } from "./cards"
 
-export function TransactionsFallback() {
-    const transactionId = useId()
-  return (
-    <div>
-        <div className="d-flex flex-column flex-md-row mb-2">
-            <div>
-                <Skeleton width="150px" height="20px" className="bg-secondary-subtle rounded-pill" />
-                <Skeleton width="300px" height="10px" className="bg-secondary-subtle rounded-pill" />
-            </div>
-            <div className="d-flex gap-3 border border-1 rounded-3 p-1 align-items-center fs-5 ms-auto" style={{lineHeight:0}}>
-                <Skeleton width="80px" height="50px" className="bg-dark-subtle rounded-3" />
-                <Skeleton width="150px" height="20px" className="bg-dark-subtle rounded-pill align-self-center" />
-                <Skeleton width="80px" height="20px" className="bg-dark-subtle rounded-pill align-self-center" />
-            </div>
-        </div>
-        <div className=" overflow-x-scroll" style={{scrollbarWidth:'none'}}>
-            <table className="table table-hover flex-fill border border-1 rounded-4 fs-6 text-nowrap">
-                <thead>
-                    <tr className="table-light">
-                        <th><Skeleton width="60px" height="20px" className="bg-tertiary rounded-pill"/></th>
-                        <th><Skeleton width="50px" height="20px" className="bg-tertiary rounded-pill"/></th>
-                        <th><Skeleton width="100px" height="20px" className="bg-tertiary rounded-pill"/></th>
-                        <th><Skeleton width="60px" height="20px" className="bg-tertiary rounded-pill"/></th>
-                        <th><Skeleton width="90px" height="20px" className="bg-tertiary rounded-pill"/></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Array(3).fill(0).map((elem, i)=>(
-                    <tr key={`${transactionId}-${i}`}>
-                        <td><Skeleton width="80%" height="20px" className="bg-tertiary rounded-pill"/></td>
-                        <td><Skeleton width="90%" height="20px" className="bg-tertiary rounded-pill"/></td>
-                        <td>
-                            <Skeleton width="80%" height="20px" className="bg-tertiary rounded-pill"/>
-                            <Skeleton width="40%" height="10px" className="bg-tertiary rounded-pill" style={{fontSize: "0.8rem"}}/>
-                        </td>
-                        <td><Skeleton width="80%" height="20px" className="bg-tertiary rounded-pill"/></td>
-                        <td><Skeleton width="100%" height="20px" className="bg-tertiary rounded-pill"/></td>
-                    </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    </div>
-  )
-}
-
-export function LoanStatusFallback() {
+export function FinancialsFallback() {
     return (
-        <div className="d-flex flex-column gap-5">
+        <section className="d-flex flex-column bg-primary px-3 py-4 p-md-5 gap-4">
             <div>
                 <Skeleton width={200} height={20} className="bg-body rounded-pill mb-2"/>
                 <div className="d-flex flex-column flex-md-row justify-content-between gap-2">
@@ -70,7 +23,7 @@ export function LoanStatusFallback() {
                     </div>
                 ))}
             </div>
-        </div>
+        </section>
   )
 }
 
@@ -94,14 +47,13 @@ export function TestimonialsFallback() {
     )
 }
 
-export function SpacesFallback() {
-    const spaceId = useId
+export function ListingsFallback() {
     return(
-        <div className="container-md row row-cols-1 row-cols-md-3">
+        <div className="container-md row px-0 justify-content-center">
             {Array(3).fill(0).map((elem, i)=>(
-                <div key={`${spaceId}-${i}`} className="d-flex flex-column rounded-4">
-                    <Skeleton height={350}  className="rounded-top-4"/>
-                    <div className="d-flex flex-column gap-4 bg-tertiary p-3 rounded-bottom-4">
+                <div key={i} className="col-12 col-md-6 col-xl-4 px-1 d-flex flex-column rounded-4">
+                    <Skeleton height={250}  className="rounded-top-4"/>
+                    <div className="d-flex flex-column gap-4 bg-light-subtle p-3 rounded-bottom-4">
                         <h3 className="fw-bold"><Skeleton /></h3>
                         <Skeleton count={4} />
                         <h5><Skeleton /></h5>
@@ -115,18 +67,4 @@ export function SpacesFallback() {
         </div>
     )
 }
-
-export default function SavingsFalback() {
-    return (
-      <>
-        <section className="d-flex flex-column bg-primary p-5 gap-5">
-          <LoanStatusFallback />
-        </section>
-        <section id="transaction" className="bg-tertiary d-flex flex-column row-gap-3 px-3 py-5 p-md-5">
-          <TransactionsFallback />
-        </section>
-      </>
-    )
-  }
-  
 

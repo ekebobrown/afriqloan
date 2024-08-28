@@ -1,3 +1,6 @@
+import { Suspense } from "react";
+import Skeleton from "react-loading-skeleton";
+
 import Header from "@/app/(dashboard)/header";
 import Sidebar from "@/app/(dashboard)/sidebar";
 import Footer from "@/app/(dashboard)/footer"
@@ -10,15 +13,26 @@ export const metadata = {
 export default function DashboardLayout({ children }) {
 
   return (
-    <>
+    <div className="d-flex flex-column" style={{minHeight:'100vh'}}>
       <Header />
-      <main className="d-flex flex-column flex-md-row bg-white" style={{minHeight:'92vh'}}>
-        <Sidebar />
-        <div className="col-12 col-md-10 bg-tertiary">
+      <main className="flex-fill d-flex flex-column flex-md-row bg-white">
+        <Suspense fallback={
+            <div className="d-none d-md-flex flex-column gap-2 col-md-2 px-4 bg-light">
+                <h5><Skeleton width={140} className="rounded-pill" /></h5>
+                <h5><Skeleton width={80} className="rounded-pill" /></h5>
+                <h5><Skeleton width={110} className="rounded-pill" /></h5>
+                <h5><Skeleton width={120} className="rounded-pill" /></h5>
+                <h5><Skeleton width={80} className="rounded-pill" /></h5>
+                <h5><Skeleton width={110} className="rounded-pill" /></h5>
+            </div>
+        }>
+            <Sidebar />
+        </Suspense>
+        <div className="flex-fill col-12 col-md-10 bg-tertiary border border-1">
           {children}
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

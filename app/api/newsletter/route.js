@@ -12,26 +12,22 @@ export async function GET(){
                             .toArray()
         return NextResponse.json(subscribers)
     }catch(error){
-        return NextResponse.json({error:"There was an error"}, {status:500, error: error})
+        return NextResponse.json({error:"There was an error"}, {status:500})
     }
 }
 
 export async function POST(request) {
     const data = await request.json()
     try{
-        const connection = await Connection()
-        const collection = connection
-                            .db('afriqloan')
-                            .collection('newsletter_subscriptions')
-
-        const email = await collection.findOne({email:data.email})
+        const subscribers = await Connection('afriqloan','newsletter_subscriptions')
+        const email = await subscribers.findOne({email:data.email})
         if(email){
-            throw new Error("Email already exist in our database.", {cause: {code:403}})
+            throw new Error("Email already exist in our database.", {status:403})
         }
 
-        await collection.insertOne(data)
+        await subscribers.insertOne(data)
         return NextResponse.json({message:"Successful, thank you for subscribing."}, {status: 200})
     }catch(error){
-        return NextResponse.json({error:error.message||"Error submitting form, please try again."}, {status:error.cause.code||500})
+        return NextResponse.json({error:error.message||"Error submitting form, please try again."}, {status:error.status||500})
     }
 }

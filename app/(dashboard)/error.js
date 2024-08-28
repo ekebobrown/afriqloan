@@ -3,12 +3,13 @@
 import styles from "@/app/page.module.css"
 
 export default function Error({error, reset}) {
-  console.log(error)
   return (
-    <div className={`p-5 bg-tertiary ${styles.fh}`}>
-        <h5>An error occured</h5>
-        <p className="text-danger">(See the browser console for more information)</p>
-        <button className="btn btn-primary rounded-pill" onClick={reset}>Retry</button>
+    <div className={`d-flex flex-column p-5 bg-tertiary gap-2 ${styles.fh}`}>
+        <div>
+          <h5 className="mb-0">An error occured</h5>
+          <small className="text-danger">({error?.message})</small>
+        </div>
+        <button className="btn btn-primary rounded-pill px-5 align-self-start" onClick={reset}>Retry</button>
     </div>
   )
 }
