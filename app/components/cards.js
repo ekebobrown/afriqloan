@@ -16,7 +16,7 @@ import { Submit } from '@/app/components/buttons'
 
 export function Token({title, balance, jointsavings, currentuser }){
     const [view, setView] = useState({})
-    const [modal, setModal] = useState(false)
+    const [modal, setModal] = useState({width:0, height:0, opacity:0})
     const [response, action] = useFormState(jointSavingsInvitation, {})
     const amountFormat = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', currencyDisplay: 'symbol' })
 
@@ -38,27 +38,27 @@ export function Token({title, balance, jointsavings, currentuser }){
                     <i className="fa-regular fa-eye ms-2 align-text-top" onClick={toggleView} role="button"></i>
                 </div>
                 <div className="d-flex align-items-center justify-content-end">
-                    {title.includes('Joint')&& jointsavings.manager===currentuser && <button className="border-0 bg-transparent text-primary fs-6 me-auto" role="button" onClick={()=>setModal(true)} disabled={jointsavings.members?.total===jointsavings.members?.joined.length}>Invite Others ({jointsavings.members?.total-jointsavings.members?.joined.length})</button>}
+                    {title.includes('Joint')&& jointsavings.manager===currentuser && <button className="border-0 bg-transparent text-primary fs-6 me-auto" role="button" onClick={()=>setModal({width:'100%', height:'100%', opacity:1})} disabled={jointsavings.members?.total===jointsavings.members?.joined.length}>Invite Others ({jointsavings.members?.total-jointsavings.members?.joined.length})</button>}
                     {!title.includes('Wallet') && <><Link href={`/savings/fund?q=${title.toLowerCase().split(' ').join('-')}`}  className="link fa-solid fa-square-plus me-2"></Link>
                     <span>deposit</span></>}
                     {!title.includes('Joint') && <i className="fa-solid fa-database ms-auto"></i>}
                 </div>
             </div>
-            {modal && createPortal(
-                <Modal>
-                    <>
-                        <div className="text-center">
+            {createPortal(
+                <Modal width={modal.width} height={modal.height} setModal={setModal}>
+                    <div className="p-3 p-md-5">
+                        <div className="text-center mb-4">
                             <h4 className="mb-0 text-primary">SEND INVITATION</h4>
                             <p className="mb-0">Please input the phone number or email address of the user you wish to invite.</p>
                         </div>
-                        <form action={action} className="w-100 row justify-content-center gap-2">
+                        <form action={action} className="w-100 row justify-content-center gap-2 mb-2">
                             <input type="text" name="invitee" className="col-11 col-md-6 rounded-pill px-4" placeholder="Email or mobile number" required autoFocus />
                             <Submit classNames="col-11 col-md-5 px-4">Send</Submit>
                         </form>
-                        <em className={`text-center ${response?.success?"text-success":"text-danger"}`}>{response?.message}</em>
-                        <i className="position-absolute top-0 end-0 mt-4 me-2 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>setModal(false)}></i>
-                    </>
-                </Modal>, document.getElementById('savings')
+                        <div className={`text-center fst-italic ${response?.success?"text-success":"text-danger"}`}>{response?.message}</div>
+                        <i className="position-absolute top-0 end-0 mt-4 me-2 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>setModal({width:0, height:0, opacity:0})}></i>
+                    </div>
+                </Modal>, document.body
             )}
         </>
     )
@@ -101,6 +101,7 @@ export function Services({image, title, children, layout}) {
 export function Listing({_id, image, title, description, pricing, preview, user, remove, status}) {
     const [index, setIndex] = useState(0)
     const [state, setState] = useState('')
+    const [modal, setModal] = useState({width:'100%', height:'100%', opacity:1})
     const [action, setAction] = useState('')
     const amount = new Intl.NumberFormat('en-NG', {style:'currency', currency:'NGN'})
     const router = useRouter()
@@ -148,7 +149,7 @@ export function Listing({_id, image, title, description, pricing, preview, user,
             }
             {(state === "action" || state === "pending"||state === "completed") &&
                 createPortal(
-                    <Modal>
+                    <Modal height={modal.height} width={modal.width} setModal={setModal}>
                         <>
                             <p className="text-primary fs-5 fw-semibold text-center">{`CONFIRM UPDATE?`}</p>
                             <div className="w-100 d-flex flex-column flex-md-row gap-2 justify-content-center ">
@@ -244,13 +245,13 @@ export function TestimonialsFallbackCard ({ layout }){
 }
 
 export function DashboardCard({ user, title, service }){
-    const [show, setShow] = useState(false)
+    const [modal, setModal] = useState({width:0, height:0, opacity:0})
     const [response, action] = useFormState(upgradeToMerchant, {})
     const router = useRouter()
 
     if (response?.success) {
         setTimeout(()=>{
-            setShow(false)
+            setModal({width:0, height:0, opacity:0})
         }, 2000)
     }
 
@@ -259,14 +260,14 @@ export function DashboardCard({ user, title, service }){
             <h4>{title}</h4>
             <div className="d-flex flex-row align-items-center">
                 <div className="d-flex flex-column flex-xl-row me-auto gap-2">
-                    {service==="loan" && <button className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4" onClick={()=>{user.loans?router.push("/loans"):setShow(true)}}>{user?.loans?"View Status":"Apply"}</button>}
+                    {service==="loan" && <button className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4" onClick={()=>{user.loans?router.push("/loans"):setModal({width:'100%', height:'100%', opacity:1})}}>{user?.loans?"View Status":"Apply"}</button>}
                     {service==="space" &&
                         <>
                             {user?.type === "merchant" &&
                                 <Link href="/listings?type=coworking" className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4">View Listings</Link>
                             }
                             {user?.type !== "merchant" &&
-                                <button className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4" onClick={()=>setShow(true)}>Upgrade To Mechant</button>
+                                <button className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4" onClick={()=>setShow({width:'100%', height:'100%', opacity:1})}>Upgrade To Mechant</button>
                             }
                         </>
                     }
@@ -275,11 +276,11 @@ export function DashboardCard({ user, title, service }){
                     <i className={`fa-solid fa-fw fa-xl ${service==="space"?"fa-people-roof":"fa-hand-holding-dollar"}`}></i>
                 </span>
             </div>
-            {show && createPortal(
-                <Modal>
+            {createPortal(
+                <Modal height={modal.height} width={modal.width} setModal={setModal}>
                     {service==="loan"&&
-                        <>
-                            <div className="text-center">
+                        <div className="p-3 p-md-5">
+                            <div className="text-center mb-4">
                                 <h4 className="text-primary mb-0">APPLICATION TYPE</h4>
                                 <p className="text-primary mb-0">Are you applying for a personal loan or onbehalf of an establishment?</p>
                             </div>
@@ -287,7 +288,7 @@ export function DashboardCard({ user, title, service }){
                                 <Link href="/loans/application?type=individual" className="btn btn-primary border border-2 border-primary rounded-pill px-4">Individual</Link>
                                 <Link href="/loans/application?type=corporate" className="btn btn-primary border border-2 border-primary rounded-pill px-4">Corporate</Link>
                             </div>
-                        </>
+                        </div>
                     }
                     {service==="space"&&
                         <>
@@ -307,8 +308,8 @@ export function DashboardCard({ user, title, service }){
                             </form>
                         </>
                     }
-                    <i className="position-absolute top-0 end-0 mt-4 me-2 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>setShow(false)}></i>
-                </Modal>, document.getElementById("dashboard")
+                    <i className="position-absolute top-0 end-0 mt-4 me-2 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>setModal({width:0, height:0, opacity:0})}></i>
+                </Modal>, document.body
             )}
       </div>
     )

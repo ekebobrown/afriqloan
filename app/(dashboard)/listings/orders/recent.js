@@ -1,5 +1,6 @@
 "use client"
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Skeleton from 'react-loading-skeleton'
 
@@ -10,14 +11,16 @@ export default function Recent({userId}){
     const [orders, setOrders] = useState({lists:[{}]})
     const [filter, setFilter] = useState([{}])
     const [search, setSearch] = useState('')
+    const [q, setQ] = useState('')
     const [display, setDisplay] = useState(20)
     const [page, setPage] = useState(0)
     const [processing, setProcessing] = useState()
     const currencyFormat = new Intl.NumberFormat('en-NG', {style: 'currency', currency: 'NGN'})
+    const router = useRouter()
 
     useEffect(()=>{
         setOrders({...orders, status:orders.message?'loading':'pending'})
-        fetch(`/api/listing/orders?limit=${display}&sort=${sort.column}&order=${sort.order}&orderdate=${date}&skip=${display*page}`)
+        fetch(`/api/listing/orders?search=${q}&limit=${display}&sort=${sort.column}&order=${sort.order}&orderdate=${date}&skip=${display*page}`)
         .then((response) => response.json())
         .then((orders) => {
             setOrders(orders)
@@ -25,7 +28,7 @@ export default function Recent({userId}){
             setFilter(orders.lists)
         })
         .catch((error) => console.log(error))
-    },[userId, sort, date, display, page])
+    },[userId, sort, date, display, page, q])
 
     useEffect(()=>{
         const elements = document.getElementsByTagName('th')
@@ -55,36 +58,30 @@ export default function Recent({userId}){
     return (
         <>
             <div className="d-flex flex-column flex-md-row px-4 pt-4 rounded-3 gap-2 align-items-center">
-                <h6 className="me-auto d-flex gap-2">Recent Orders {Array.isArray(processing)?processing?.length>0&&<div className="d-flex justify-content-center rounded-2 bg-success-subtle text-success px-2 fs-6">+{processing?.length} Order{processing?.length>1?'s':''}</div>:<Skeleton width={100} />}</h6>
-                {orders.message?<button className="align-self-stretch d-flex rounded-2 border border-1 justify-content-between align-items-center px-4 py-2 bg-body position-relative" disabled={!orders.success||orders.status==='loading'}>
+                <h6 className="me-auto d-flex flex-column flex-xl-row gap-2">Recent Orders {Array.isArray(processing)?processing?.length>0&&<div className="d-flex justify-content-center rounded-2 bg-success-subtle text-success px-2 fs-6">+{processing?.length} Order{processing?.length>1?'s':''}</div>:<Skeleton width={100} borderRadius={5} />}</h6>
+                <button className="align-self-stretch d-flex rounded-2 border border-1 justify-content-between align-items-center px-4 py-2 bg-body position-relative" disabled={!orders.success||orders.status==='loading'}>
                     <input type="date" min="2024-08-01" max={`${new Date().toISOString().split('T')[0]}`} className="position-absolute top-0 start-0 w-100 opacity-0 py-2"  value={date} onChange={(e)=>{setDate(e.target.value); window.history.pushState({}, '', '/listings/orders')}} disabled={!orders.success||orders.status==='loading'} />
                     <span className="text-nowrap">{date||'Select Date'}</span>
                     <i className="fa-solid fa-calendar-days ms-2"></i>
-                </button>:<Skeleton width={140} direction="rtl" className="btn rounded-2 border border-1 px-4 py-3 bg-body"/>}
+                </button>
                 <div className="align-self-stretch d-flex align-items-center gap-2">
-                {orders.message?
-                    <button className="flex-fill dropdown-toggle align-self-stretch d-flex rounded-2 border border-1 justify-content-between align-items-center px-4 py-2 bg-body position-relative" disabled={!orders.success||orders.status==='loading'} data-bs-toggle="dropdown" aria-expanded="false">
-                        Filters
-                        <i className="fa-solid fa-sliders ms-2"></i>
-                        <ul className="dropdown dropdown-menu border shadow-sm" style={{minWidth:'102%'}}>
-                            <li className="dropdown-item" onClick={()=>filterOrders("partial")}>Partial</li>
-                            <li className="dropdown-item" onClick={()=>filterOrders("completed")}>Completed</li>
-                            <li className="dropdown-item" onClick={()=>filterOrders("cancelled")}>Cancelled</li>
-                            <li className="dropdown-item" onClick={()=>filterOrders("processing")}>Processing</li>
-                        </ul>
-                    </button>:
-                    <Skeleton width={120} className="btn rounded-2 border border-1 px-4 py-3 bg-body" />
-                }
-                {orders.message?
-                    <button className={`align-self-stretch d-flex rounded-2 border border-1 align-items-center px-3 py-2`} title="Reset All" style={{backgroundColor:'rgba(137,70,207,0.2)', color:'#8946CF'}} onClick={()=>{setFilter(orders.lists); JSON.stringify(initialSort)!==JSON.stringify(sort) && setSort(initialSort); date!==""&&setDate(''); window.history.pushState({}, '', '/listings/orders')}} disabled={!orders.success||orders.status==='loading'}>
-                        <i className="fa-solid fa-arrows-rotate"></i>
-                    </button>:
-                    <Skeleton width={50} className="btn rounded-2 border border-1 px-4 py-3" highlightColor="#cbaee6" baseColor="#DFCCF1" direction="rtl" duration={2} />
-                }
+                <button className="flex-fill dropdown-toggle align-self-stretch d-flex rounded-2 border border-1 justify-content-between align-items-center px-4 py-2 bg-body position-relative" disabled={!orders.success||orders.status==='loading'} data-bs-toggle="dropdown" aria-expanded="false">
+                    Filters
+                    <i className="fa-solid fa-sliders ms-2"></i>
+                    <ul className="dropdown dropdown-menu border shadow-sm" style={{minWidth:'102%'}}>
+                        <li className="dropdown-item" onClick={()=>filterOrders("partial")}>Partial</li>
+                        <li className="dropdown-item" onClick={()=>filterOrders("completed")}>Completed</li>
+                        <li className="dropdown-item" onClick={()=>filterOrders("cancelled")}>Cancelled</li>
+                        <li className="dropdown-item" onClick={()=>filterOrders("processing")}>Processing</li>
+                    </ul>
+                </button>
+                <button className={`align-self-stretch d-flex rounded-2 border border-1 align-items-center px-3 py-2`} title="Reset All" style={{backgroundColor:'rgba(137,70,207,0.2)', color:'#8946CF'}} onClick={()=>{q!==""&&setQ(""); setFilter(orders.lists); JSON.stringify(initialSort)!==JSON.stringify(sort) && setSort(initialSort); date!==""&&setDate(''); window.history.pushState({}, '', '/listings/orders')}} disabled={!orders.success||orders.status==='loading'}>
+                    <i className={`fa-solid fa-arrows-rotate ${orders.status==='loading'&&'fa-spin'}`}></i>
+                </button>
                 </div>
             </div>
             <div className="search flex-fill px-4 py-3 position-relative">
-                <input type="search" className="w-100 border border-1 border-tertiary px-5 py-2" value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search Orders" disabled={!orders.success||orders.status==='loading'}/>
+                <input type="search" className="w-100 border border-1 border-tertiary px-5 py-2" value={search} onChange={(e)=>setSearch(e.target.value)} onKeyUp={(e)=>e.keyCode===13&&e.target.value!==''&&setQ(search)} placeholder="Search Orders" disabled={!orders.success||orders.status==='loading'}/>
                 <i className="fa-solid fa-magnifying-glass position-absolute top-50 translate-middle-y text-body-tertiary" style={{left:'40px'}}></i>
             </div>
             <div className="bg-tertiary">
@@ -103,7 +100,7 @@ export default function Recent({userId}){
                         {!Array.isArray(orders?.lists) && <tr><td colSpan="5" className="text-danger">{orders?.message}</td></tr>}
                         {orders.success && filter.length===0 && <tr><td colSpan="5"><div className="flex-fill d-flex text-primary align-items-center"><i className="fa-solid fa-circle-info me-2"></i>No order. Kindly review your filter(s) or check back later.</div></td></tr>}
                         {Array.isArray(orders.lists) && filter.map((order, index)=>(
-                            <tr key={index} className="fs-6 px-4" role="button" onClick={()=>window.history.pushState({}, '', `?id=${order?._id}`)}>
+                            <tr key={index} className="fs-6 px-4" role="button" onClick={()=>window.innerWidth<=767?router.push(`./orders/${order._id}`):window.history.pushState({id:order?._id}, '', `?id=${order?._id}`)}>
                                 <td>
                                     <div className="d-flex flex-row align-items-center gap-1">
                                         {order.item?.image?<Image
@@ -146,8 +143,7 @@ export default function Recent({userId}){
                 }
             </div>
             {orders.status==="loading" &&
-                <div className="d-flex justify-content-center align-items-center position-absolute top-0 end-0 bottom-0 start-0" style={{backgroundColor:'rgba(240, 240, 243, 0.8)'}}>
-                    <i className="fa-solid fa-circle-notch fa-spin me-2"></i> Please Wait...
+                <div className="d-flex justify-content-center align-items-center position-absolute top-0 end-0 bottom-0 start-0" style={{backgroundColor:'rgba(240, 240, 243, 0.5)'}}>
                 </div>
             }
         </>

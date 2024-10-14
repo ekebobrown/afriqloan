@@ -9,15 +9,20 @@ export async function GET(request){
     const { isAuthenticated, data, session_token } = await Auth()
     const path = request.nextUrl.pathname
     const searchParams = request.nextUrl.searchParams
+    const sort = searchParams.get('sort')
+    const search = searchParams.get('search')
     const limit = parseInt(searchParams.get('limit'))
     const skip = parseInt(searchParams.get('skip'))
-    const sort = searchParams.get('sort')
     const order = parseInt(searchParams.get('order'))
     const from = new Date(searchParams.get('orderdate')||"1970-01-01")
     const to = new Date((new Date(searchParams.get('orderdate')).valueOf() + 86400000)||Date.now())
 
     if(!isAuthenticated) redirect(`/login?redirect=${encodeURIComponent(path)}${searchParams}`)
-
+    const listing_pipeline = [{$match: {$expr: {$eq: [new ObjectId(data?._id), "$merchant"]}}}]
+    if(search!=="") {
+        const query = {$search: {"index":"search", "text": {"path":['type', 'title', 'description'], "query":search}}}
+        listing_pipeline.unshift(query)
+    }
     try{
         const collection = await Connection("afriqloan", "orders")
         const orders = await collection.aggregate([
@@ -25,7 +30,7 @@ export async function GET(request){
                                         from:"listings",
                                         localField:"items",
                                         foreignField:"_id",
-                                        pipeline: [{$match: {$expr: {$eq: [new ObjectId(data?._id), "$merchant"]}}}],
+                                        pipeline: listing_pipeline,
                                         as:"items"
                                     }},
                                     {$lookup: {

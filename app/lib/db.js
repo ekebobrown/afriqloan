@@ -9,7 +9,7 @@ const uri = process.env.DB_CONNECTION_STRING;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
-    strict: true,
+    //strict: true,
     deprecationErrors: true,
   },
   monitorCommands:true,

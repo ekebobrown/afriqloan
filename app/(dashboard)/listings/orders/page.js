@@ -48,7 +48,7 @@ export default async function Orders(){
                 <div id="recent" className="recent sort flex-fill col-12 col-md-8 rounded-3 bg-light overflow-hidden position-relative align-self-start shadow-sm">
                     <Recent />
                 </div>
-                <div className="preview flex-fill p-3 col-12 col-md-4 rounded-3 bg-light shadow-sm position-relative transition overflow-scroll align-self-start" style={{maxHeight:'500px'}}>
+                <div className="preview d-none d-md-flex flex-column flex-fill p-3 col-md-4 rounded-3 bg-light shadow-sm position-relative transition overflow-scroll align-self-start" style={{maxHeight:'500px'}}>
                     <Preview />
                 </div>
             </div>

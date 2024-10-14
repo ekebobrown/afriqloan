@@ -45,41 +45,6 @@
   --card-border-rgb: 131, 134, 135;
 }
 
-/**
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-
-    --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
-    --secondary-glow: linear-gradient(
-      to bottom right,
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0.3)
-    );
-
-    --tile-start-rgb: 2, 13, 46;
-    --tile-end-rgb: 2, 5, 19;
-    --tile-border: conic-gradient(
-      #ffffff80,
-      #ffffff40,
-      #ffffff30,
-      #ffffff20,
-      #ffffff10,
-      #ffffff10,
-      #ffffff80
-    );
-
-    --callout-rgb: 20, 20, 20;
-    --callout-border-rgb: 108, 108, 108;
-    --card-rgb: 100, 100, 100;
-    --card-border-rgb: 200, 200, 200;
-  }
-}
-*/
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -110,6 +75,9 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700 !important
 }
 /* Containers */
+.container-xsm {
+  min-width: 300px !important;
+}
 .container-sm {
   max-width: 800px !important
 }
@@ -312,6 +280,10 @@ button:focus {
     outline: none;
 }
 
+input::placeholder{
+  font-style: italic;
+}
+
 /* Custom Classes */
 .p-lg {
   padding: 4.5rem 1.5rem;
@@ -421,14 +393,40 @@ button:focus {
   box-shadow: 0 -5px 5px -2px rgba(222, 226, 230, 0.7)
 }
 
-/* Animations & Transitions */
-@keyframes reveal {
-  0% {height:0; padding:0; overflow: hidden;}
-  100% {height:100%}
+.overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  overflow: hidden;
+  inset: 0px;
+  opacity: 0;
+  transform: translateY(-100%);
+  z-index: 9999;
 }
 
+.portal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #FFFFFF;
+  border: 10px solid #FFFFFF;
+  border-radius: 10px;
+  max-height: 80vh;
+  gap: 1rem;
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+.slidein {
+  opacity: 1;
+  transform: translateY(0%);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Animations & Transitions */
 .transition {
-  transition: all 0.8s ease-in-out;
+  transition: all .5s ease-in-out;
 }
 
 /* Media Screens */

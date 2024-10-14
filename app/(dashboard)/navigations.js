@@ -38,10 +38,16 @@ export function User({ user }) {
                     </ul>
                 </>
             }
-            <div className="position-relative">
-                <li className={`${pathname.includes('inbox')?'active':''}`}><Link href="/inbox" className="link d-inline-flex align-items-center"><span className="fa-solid fa-inbox fa-fw me-2"></span>Inbox</Link></li>
-                {msgcounts>0&&<div className="position-absolute d-flex align-items-center justify-content-center rounded-circle bg-warning" style={{width:'18px', height:'18px', top:'2px', left:'12px'}}><small>{msgcounts}</small></div>}
-            </div>
+            <>
+                <div className="position-relative">
+                    <li className={`${pathname.includes('inbox')?'active':''}`}><Link href="/messages/inbox" className="link d-inline-flex align-items-center"><span className="fa-solid fa-inbox fa-fw me-2"></span>Inbox</Link></li>
+                    {msgcounts>0&&<div className="position-absolute d-flex align-items-center justify-content-center rounded-circle bg-warning" style={{width:'18px', height:'18px', top:'2px', left:'12px'}}><small>{msgcounts}</small></div>}
+                </div>
+                <ul className={`collapsible ${pathname.includes('messages')?'expand':''}`}>
+                    <li className={`${pathname.includes('draft')?'submenu':''}`}><Link href="/messages/drafts" className="link d-inline-flex align-items-center"><span className="fa-solid fa-file-lines fa-fw me-2 fs-6"></span><span className="fs-6">Drafts</span></Link></li>
+                    <li className={`${pathname.includes('trash')?'submenu':''}`}><Link href="/messages/trash" className="link d-inline-flex align-items-center"><span className="fa-solid fa-trash fa-fw me-2 fs-6"></span><span className="fs-6">Trash</span></Link></li>
+                </ul>
+            </>
         </>
     )
 }

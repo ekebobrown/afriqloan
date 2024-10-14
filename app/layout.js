@@ -6,6 +6,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 import IsOffline from '@/app/lib/isoffline'
 import Bootstrap from "@/app/components/bootstrap";
+import { Overlay } from "./components/modals";
 
 import "@/app/globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({children}) {
             <Bootstrap />
             <IsOffline />
             {children}
+            <Overlay />
         </body>
     </html>
   )

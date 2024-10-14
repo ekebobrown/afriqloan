@@ -36,6 +36,8 @@ export async function POST(request){
             status: user.status
         }
         const session_token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
+        await Connection("afriqloan","sessions")
+                    .then((sessions)=>sessions.insertOne({user:user?._id, loggedin:new Date(), ip:request.headers.get("X-Forwarded-For"), browser:request.headers.get("user-agent")}))
         return NextResponse.json({message:"Sign in successful. Redirecting...", session_token:session_token})
     }catch(error){
         console.log(error)
