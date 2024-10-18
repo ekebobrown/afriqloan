@@ -207,7 +207,6 @@ h1, h2, h3, h4, h5, h6 {
 
 #sidebar li {
   padding: 0.5rem 1rem;
-  border-left: 3px solid #F8F9FA;
 }
 
 #sidebar li:hover, #sidebar .active {
@@ -434,15 +433,30 @@ input::placeholder{
   .border-right {
     border-right: 5px solid #CCCCCC
   }
-
-  nav .navbar-toggler {
-    display: none !important
-  }
 }
 
 @media (max-width: 768px) {
   .border-bottom-sm {
     border-bottom: 5px solid #CCCCCC
+  }
+}
+
+@media (min-width: 992px) {
+  nav .navbar-toggler {
+    display: none !important
+  }
+
+  .offcanvas {
+    display: flex !important;
+    flex:1 1 auto !important;
+    position: relative !important;
+    visibility: visible !important;
+    z-index: 0 !important;
+    border-width: 0 !important;
+  }
+
+  .offcanvas-start {
+    transform: translateX(0) !important;
   }
 }
 

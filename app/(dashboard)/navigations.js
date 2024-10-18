@@ -61,7 +61,6 @@ export function Info() {
             <li className={`${pathname.includes('settings')?'active':''}`}><Link href="/settings" className="link d-inline-flex align-items-start lh-1"><span className="fa-solid fa-gear fa-fw me-2"></span>Setting</Link></li>
             <li className={`${pathname.includes('information')?'active':''}`}><Link href="/information" className="link d-inline-flex align-items-start lh-1"><span className="fa-solid fa-circle-info fa-fw me-2"></span>Information</Link></li>
             <li className={`${pathname.includes('terms')?'active':''}`}><Link href="/terms" className="link d-inline-flex align-items-start lh-1"><span className="fa-solid fa-shield-halved fa-fw me-2"></span>Security Terms</Link></li>
-            <li className={`${pathname.includes('#')?'active':''}`}><span className="fa-solid fa-phone fa-fw me-2"></span>+234-800-300-333</li>
         </>
     )
 }

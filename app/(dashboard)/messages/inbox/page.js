@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import Skeleton from "react-loading-skeleton"
 
+import { useFetcher } from "@/app/lib/fetchers"
 import silhouette from "@/public/silhouette/universal-blue.svg"
 
 export default function Inbox(){

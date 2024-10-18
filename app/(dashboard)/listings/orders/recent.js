@@ -58,7 +58,7 @@ export default function Recent({userId}){
     return (
         <>
             <div className="d-flex flex-column flex-md-row px-4 pt-4 rounded-3 gap-2 align-items-center">
-                <h6 className="me-auto d-flex flex-column flex-xl-row gap-2">Recent Orders {Array.isArray(processing)?processing?.length>0&&<div className="d-flex justify-content-center rounded-2 bg-success-subtle text-success px-2 fs-6">+{processing?.length} Order{processing?.length>1?'s':''}</div>:<Skeleton width={100} borderRadius={5} />}</h6>
+                <h6 className="me-auto d-flex flex-row flex-md-column flex-xl-row gap-2">Recent Orders {Array.isArray(processing)?processing?.length>0&&<div className="d-flex justify-content-center rounded-2 bg-success-subtle text-success px-2 fs-6">+{processing?.length} Order{processing?.length>1?'s':''}</div>:<Skeleton width={100} borderRadius={5} />}</h6>
                 <button className="align-self-stretch d-flex rounded-2 border border-1 justify-content-between align-items-center px-4 py-2 bg-body position-relative" disabled={!orders.success||orders.status==='loading'}>
                     <input type="date" min="2024-08-01" max={`${new Date().toISOString().split('T')[0]}`} className="position-absolute top-0 start-0 w-100 opacity-0 py-2"  value={date} onChange={(e)=>{setDate(e.target.value); window.history.pushState({}, '', '/listings/orders')}} disabled={!orders.success||orders.status==='loading'} />
                     <span className="text-nowrap">{date||'Select Date'}</span>
