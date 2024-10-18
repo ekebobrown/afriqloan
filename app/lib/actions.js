@@ -16,7 +16,8 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM
 const digits = customAlphabet('1234567890', 10)
 
 export async function submitForm(state, formData) {
-    const session_token = cookies().get("session_token")?.value
+    const cookieStore = await cookies()
+    const session_token = cookieStore.get("session_token")?.value
     const entries = Object.fromEntries(formData)
     Object.keys(entries).forEach(key => {if(key.startsWith('$ACTION_')){delete entries[key]}})
     //Check for extra information in the state and add to form entries
@@ -35,23 +36,9 @@ export async function submitForm(state, formData) {
     const data = await response.json()
     //Confirm submission
     if (response.ok) {
-        if(data?.session_token) {
-            cookies().set('session_token', data.session_token, {
-                expires: new Date(Date.now() + 60*30*1000),
-                httpOnly: true,
-                secure: true,
-                path: '/',
-            })
-        }
-        return ({...state,
-            success: true,
-            message: data.message,
-        });
+        return ({...state, success: true, message: data.message});
     }else{
-        return ({...state,
-            success: false,
-            message: data.error,
-        });
+        return ({...state, success: false, message: data.error});
     }
 }
 
@@ -72,12 +59,12 @@ export async function accountActivationInstruction(formData){
             status:user.status
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
-        await activation.insertOne({token:token, user:user._id, createdAt: new Date()})
+        await activation.insertOne({_id:user._id, token:token, timestamp: new Date()})
         //Send activation email and return response
-        const response = await Activation(token, "Account Activation", user.contact.email)
+        await Activation(token, "Account Activation", user.contact.email)
         return {success:true, message:"Activivation instruction sent successfully"}
     }catch(error){
-        return {success:false, message:"There was an error sending activation instruction"}
+        return {success:false, message:error.message||"There was an error sending activation instruction"}
     }
 }
 
@@ -199,6 +186,8 @@ export async function createSavingsAccount(entries){
 }
 
 export async function addPersonalSavings(state, formData){
+    const bvn = formData.get('bvn')
+    const nin= formData.get('nin')
     const initialdeposit = parseInt(formData.get('initialdeposit'))
     const savingsgoal = parseInt(formData.get('savingsgoal'))
     const { data } = await Auth()
@@ -206,7 +195,15 @@ export async function addPersonalSavings(state, formData){
         const connection = await Connection("afriqloan")
         const update = await connection.collection("users").updateOne(
                                 {_id:new ObjectId(data._id)},
-                                {$addToSet: {"savings": {type:"Personal Savings", opened:new Date(), status:"active", balance:initialdeposit, goal:savingsgoal}}}
+                                {
+                                    $set: {
+                                        "identifications.nin":nin,
+                                        "banks.verification": {number:bvn, added:new Date(), verified:true}
+                                    },
+                                    $addToSet: {
+                                        "savings": {type:"Personal Savings", opened:new Date(), status:"active", balance:initialdeposit, goal:savingsgoal}
+                                    }
+                                }
                               )
         if(!update.acknowledged) throw new Error("Error adding account.")
         if(initialdeposit > 0) await createTransaction("External", initialdeposit, "Personal Savings", "Initial Deposit", data._id, data._id)
@@ -262,6 +259,7 @@ export async function createTransaction(source, amount, destination, description
 export async function jointSavingsInvitation(state, formData){
     const { data } = await Auth()
     const contact = formData.get("invitee")
+    
     try{
         const connection = await Connection("afriqloan")
         const users = await connection.collection("users")
@@ -288,8 +286,8 @@ export async function jointSavingsInvitation(state, formData){
                                         .insertOne({inviter:user._id, group:managed._id, code:code, user:contact, status:"pending", sent:new Date()})
         if(!invite.acknowledged) throw new Error()
         const subject = "Joint Savings Invitation"
-        const body = `<div style="display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; border:0px solid #0c4b54; text-align:center; border-radius:10px; padding:20px; background-color:#F0F1F3">
-                            <h4 style="margin-bottom:0px">Dear ${invitee.names}</h4>
+        const body = `<div style="display:flex; flex-direction:column; justify-content:flex-start; align-items:flex-start; gap:10px; border:0px solid #0c4b54; text-align:left; border-radius:10px; padding:20px; background-color:#F0F1F3">
+                            <h5 style="margin-bottom:0px">Dear ${invitee.names}</h5>
                             <p>You have been invited to join a joint savings group by <strong>${user.names}</strong>.<br />
                             Kindly click on the following link to accept or manually insert the invitation code <strong>(${code})</strong> in your savings&apos; dashboard.</p>
                             <p><a href=${process.env.SITE_URL}/savings/join?code=${code} rel='nofollow' style='color:#FFFFFF;text-decoration:none; border:1px solid green; padding:10px 40px; border-radius:10px; width:100%; background-color:#0c4b54'>Join Here</a></p>
@@ -303,20 +301,21 @@ export async function jointSavingsInvitation(state, formData){
         await connection.collection("messages")
                         .insertOne({subject:subject, body:body, timestamp:new Date(), priority:1, recipient:invitee._id, sender:new ObjectId("66e8411093b375ec7102a44a"), flags: {status:"unread"}})
         await Invitation(invitee.contact.email, subject, body)
-        return {success:true, code:code, message:`Invitation created and sent successfully, kindly copy the invitation code (${code}) for manual joining. Have a nice day.`}
+        return {...state, success:true, code:code, message:`Invitation created and sent successfully. Kindly copy the invitation code (${code}) for manual joining. Have a nice day.`}
     }catch(error){
-        return {success:false, message:error.message||"An error occurred trying to send your invitation."}
+        return {...state, success:false, message:error.message||"An error occurred trying to send your invitation."}
     }
 }
 
 export async function joinJointSavings(state){
     const { data } = await Auth()
     const code = state.code
+    console.log(data, code)
     try{
         const connection = await Connection("afriqloan")
         const user = await connection.collection("users").findOne({_id:new ObjectId(data._id)})
         const invitations = await connection.collection("joint_savings_invitations")
-        const invitation = await invitations.findOne({user:user.contact.email, code:code})
+        const invitation = await invitations.findOne({user:{$in: [user.contact.email, user.contact.phone]}, code:code})
         if(!invitation) throw new Error("You do not have any pending invitation or you have supplied an invalid invitation code.")
         const jointsavings = await connection.collection("joint_savings")
         const jointsaving = await jointsavings.find({'members.joined': new ObjectId(data._id)}).toArray()
@@ -332,6 +331,7 @@ export async function joinJointSavings(state){
 
         return {...state, success:true, message:"You are successfully joined a joint savings group."}
     }catch(error){
+        console.log(error)
         return {...state, success:false, pending:false, message:error.message||"Error joining savings group."}
     }
 }

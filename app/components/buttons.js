@@ -1,6 +1,6 @@
 "use client"
-import { createPortal, useFormStatus, useFormState } from "react-dom"
-import { useState } from "react"
+import { createPortal, useFormStatus } from "react-dom"
+import { useState, useActionState } from "react"
 import Link from "next/link"
 
 import Modal from "@/app/components/modals"
@@ -10,8 +10,8 @@ import { createJointSavings, addPersonalSavings } from "@/app/lib/actions"
 export function ActivateSavings({children, classNames, type, holder, disabled}) {
     const [modal, setModal] = useState({width:0, height:0, opacity:0})
     const [prompt, setPrompt] = useState("")
-    const [joint, jointAction] = useFormState(createJointSavings, {new:true})
-    const [personal, personalAction] = useFormState(addPersonalSavings, {})
+    const [joint, jointAction] = useActionState(createJointSavings, {new:true})
+    const [personal, personalAction] = useActionState(addPersonalSavings, {})
     return (
         <>
             <button type="submit" className={`btn btn-primary rounded-pill border border-2 border-white align-self-center ${classNames}`} disabled={disabled} onClick={()=>setModal({width:'100%', height:'100%', opacity:1})}>
@@ -22,8 +22,8 @@ export function ActivateSavings({children, classNames, type, holder, disabled}) 
                     <>
                         <div className="d-flex flex-column align-items-center p-3 p-md-4">
                             {type==="joint" &&
-                                <div className="p-3 p-md-5">
-                                    <h4 className="text-primary">CONFIRM ACTION</h4>
+                                <div className="p-3">
+                                    <h4 className="text-primary text-center">CONFIRM ACTION</h4>
                                     <p className="text-center text-primary">Do you want to activate a new joint savings where you can invite other members or you want to join an existing one using an invitation ID?</p>
                                     <div className="w-100 d-flex flex-column flex-md-row gap-2 justify-content-center">
                                         {holder?
@@ -40,6 +40,10 @@ export function ActivateSavings({children, classNames, type, holder, disabled}) 
                                     <h4 className="text-primary">ADD PERSONAL SAVINGS</h4>
                                     <p className="text-center text-primary">Please supply the following information to continue</p>
                                     <form action={personalAction} className="w-100 d-flex flex-column gap-3">
+                                        <div className="d-flex flex-column flex-md-row gap-2">
+                                            <label className="d-flex flex-column align-items-start fw-semibold">BVN<input type="text" inputMode="number" minLength="11" maxLength="11" name="bvn" className="rounded-3 w-100" placeholder="BVN" required /></label>
+                                            <label className="d-flex flex-column align-items-start fw-semibold">NIN<input type="text" inputMode="number" minLength="11"  maxLength="11" name="nin" className="rounded-3 w-100" placeholder="NIN" required/></label>
+                                        </div>
                                         <label className="d-flex flex-column align-items-start fw-semibold">Saving Goals<input type="number" min="100000" step="1000" name="savingsgoal" className="rounded-3 w-100" placeholder="Saving Goals" required /></label>
                                         <label className="d-flex flex-column align-items-start fw-semibold">Deposit Amount<input type="number" min="1000" step="500" name="initialdeposit" className="rounded-3 w-100" placeholder="Deposit Amount" required/></label>
                                         <div className="w-100 d-flex flex-column flex-md-row gap-2 justify-content-center">

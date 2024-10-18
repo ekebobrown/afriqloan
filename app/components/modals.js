@@ -1,5 +1,8 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+
 export default function Modal({children, width=0, height=0, transform='translate(-50%, -50%)', setModal}){
     return(
         <>
@@ -13,6 +16,12 @@ export default function Modal({children, width=0, height=0, transform='translate
 }
 
 export function Overlay(){
+    const id = useSearchParams().get("id")
+    useEffect(()=>{
+        const overlay = document.getElementsByClassName("overlay")[0]
+        if(!id) overlay.classList.remove('slidein')
+    }, [id])
+
     return (
         <section className="overlay transition">
             <div id="portal" className="portal container-xsm">

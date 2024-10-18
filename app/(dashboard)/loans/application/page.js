@@ -13,7 +13,8 @@ export const metadata = {
 };
 
 export default async function LoanRequest({searchParams}) {
-  const type = searchParams.type
+  const params = await searchParams
+  const type = await params.type
   const { data } = await Auth()
   const user = await Connection("afriqloan", "users").then((users)=>users.findOne({_id:new ObjectId(data._id)},{projection: {_id:0, password:0, avatar:0, testimony:0, accounts:0, savings:0}}))
   let content

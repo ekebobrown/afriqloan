@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useRef, useId } from 'react'
-import { useFormStatus, useFormState, createPortal } from 'react-dom'
+import { useState, useEffect, useRef, useId, useActionState } from 'react'
+import { useFormState, createPortal } from 'react-dom'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 import { submitForm, passwordResetInstruction, passwordReset, createSavingsAccount } from '@/app/lib/actions'
@@ -12,45 +12,181 @@ import { personalLoan } from '@/app/lib/actions/loans'
 
 export function Newsletter() {
     async function submitForm(formData){
+        const info = document.getElementById("info")
         const subscriberInfo = {
             names: formData.get('names'),
             phone: formData.get('phone'),
             email: formData.get('email'),
             active: true
         }
-        const response = await fetch(`/api/newsletter`, {
+        await fetch(`/api/newsletter`, {
+            signal: AbortSignal.timeout(20000),
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(subscriberInfo)
         })
-        const data = await response.json()
-        const alert = document.getElementById("alert")
-        if (response.ok) {
-            const inputs = document.getElementsByTagName("input")
-            alert.innerHTML=`<small class="text-success">${data.message}</small>`
-            for(const input of inputs){
-                input.value=""
-            }
-        }else{
-            alert.innerHTML=`<small class="text-danger">${data.error}</small>`
-        }
-
-        setTimeout(()=>{
-            alert.innerHTML = "&nbsp;"
-        }, 8000)
+        .then(async(response)=>{
+            const data = await response.json()
+            if (!response.ok) throw new Error(data.error)
+            info.innerHTML=`<small class="text-success">${data.message}</small>`
+            info.style.height = '50px'
+            for(const input of document.getElementsByTagName("input")) input.value=""
+        })
+        .catch((error)=>{
+            info.innerHTML=`<small class="text-danger">${error.message}</small>`
+            info.style.height = '50px'
+        })
+        .finally(()=>{
+            setTimeout(()=>{
+                info.innerHTML = ""
+                info.style.height = '0px'
+            }, 8000)
+        })
     }
 
     return (
-        <form action={submitForm} className="d-flex flex-column w-100 px-4 px-md-5 pt-5 pb-4 bg-white rounded-3">
+        <form action={submitForm} className="d-flex flex-column w-100 px-4 px-md-5 py-4 bg-white rounded-3">
             <label className="d-flex flex-column align-items-start mb-3 fs-6">Your Name<input type="text" name="names" className="w-100" placeholder="e.g John Doe" required /></label>
             <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100" placeholder="e.g +234-801-234-5678" required /></label>
             <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100" placeholder="e.g johndoe@gmail.com" required /></label>
             <Submit classNames="px-5">Submit</Submit>
-            <em id="alert" className="text-center pt-1">&nbsp;</em>
+            <small id="info" className="flex-fill d-flex text-center align-items-center justify-content-center overflow-hidden lh-1 fst-italic" style={{height:'0px', transition:'height 0.5s ease-in-out'}}></small>
         </form>
   )
+}
+
+
+export function Registration() {
+    const searchParams = useSearchParams()
+    //const [account, setAccount] = useState(searchParams.get("asa")||"user")
+    const [state, action, isPending] = useActionState(submitForm, {api: '/api/account/register', status: "pending"})
+    const [pass, setPass] = useState()
+    const [confirmpass, setConfirmpass] = useState()
+    const router = useRouter()
+
+    if (state?.success) {
+        setTimeout(()=>{
+            router.replace('/login')
+        }, 5000)
+    }
+
+    if(state?.message && !isPending) {
+        const info = document.getElementById('info')
+        info.innerText = state?.message
+        info.style.height = "50px"
+
+        setTimeout(()=>{
+            info.style.height = "0px"
+            info.innerText = ""
+        }, 10000)
+    }
+
+    /*
+    function updateURL(type) {
+        const query = new URLSearchParams(searchParams.toString())
+        query.set('asa', type)
+        history.replaceState(null, '', `?${query.toString()}`)
+        setAccount(type)
+      }
+    */
+
+    return (
+        <>
+            {/*<div className="align-self-stretch d-flex flex-column flex-md-row justify-content-center align-items-center column-gap-3 mb-5">
+               <h6 className="text-primary">Register as:</h6>
+                <div className="align-self-stretch rounded-pill p-1 bg-secondary-subtle border border-1 border-primary">
+                    <button className={`w-50 btn ${account==='user'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('user')}>User</button>
+                    <button className={`w-50 btn ${account==='landlord'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('landlord')} >Landlord</button>
+                </div>
+            </div>*/}
+            <form action={action} className="d-flex flex-column w-100" autoComplete="no">
+                <label className="d-flex flex-column align-items-start mb-3 fs-6">Full name<input type="text" name="names" className="w-100 rounded-2" placeholder="e.g John Doe" disabled={isPending} required/></label>
+                <label className="d-flex flex-column align-items-start mb-3">
+                    Mobile Number
+                    <div className="w-100 d-flex flex-row align-items-center gap-2 position-relative">
+                        <i className="fa-solid fa-plus fa-sm position-absolute top-0 start-0 p-2 h-100 d-flex align-items-center bg-primary text-white rounded-start"></i>
+                        <input type="text" inputMode="number" name="countrycode" minLength="1" maxLength="3" className="flex-fill col-3 rounded-2 ps-4 ps-lg-5 ms-1 ms-md-0" placeholder="234" pattern="[0-9]{1,3}" disabled={isPending} required />
+                        <input type="phone" name="phone" maxLength="11" className="flex-fill col-9 col-lg-10 rounded-2" placeholder="8012345678" disabled={isPending} required/>
+                    </div>
+                </label>
+                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@abc.xyc" disabled={isPending} required/></label>
+                {/*account==="landlord" &&
+                    <label className="d-flex flex-column align-items-start mb-3">Space Location
+                        <select name="location" className="w-100 rounded-2">
+                            <option value="Uyo">Uyo</option>
+                        </select>
+                    </label>
+                */}
+                <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password"  className="w-100 rounded-2" value={pass} onChange={(e)=>setPass(e.target.value)} placeholder="************" disabled={isPending} required/></label>
+                <label className="d-flex flex-column align-items-start mb-3 transition">Confirm Password<input type="password" id="confirm-password"  className="w-100 rounded-2" value={confirmpass} onChange={(e)=>{e.target.nextElementSibling&&e.target.nextElementSibling.remove(); setConfirmpass(e.target.value)}} onBlur={(e)=>{pass!==confirmpass?e.target.parentElement.insertAdjacentHTML("beforeend","<small class='text-danger fst-italic'>Must match with password</small>"):e.target.nextElementSibling?.remove()}} placeholder="***********" disabled={isPending} required/></label>
+                <div className="d-flex flex-column justify-content-between align-items-center mb-2">
+                    <label className="d-flex flex-row align-items-baseline"><input type="checkbox" className="me-2" disabled={isPending} required/><span>I agree to the&nbsp;<Link href="/terms-and-conditions" className="link">Terms and Conditions</Link>&nbsp;of AfriqLoan</span></label>
+                    <Link href="/login" className="link">Alread Registered?</Link>
+                </div>
+                <input type="hidden" name="type" value="user" />
+                <input type="hidden" name="role" value="user" />
+                <input type="hidden" name="status" value="pending" />
+                <Submit disabled={pass!==confirmpass} classNames="px-5 align-self-center">Submit</Submit>
+            </form>
+            <small id="info" className={`d-flex align-items-center lh-1 overflow-hidden fst-italic text-center ${state?.success?"text-success":"text-danger"}`} style={{height:'0px', transition:'height 0.5s ease-in-out'}}></small>
+        </>
+    )
+}
+
+
+export function LoginForm({email, redirect}) {
+    const [user, setUser] = useState({email:email||"", password:""})
+    const [pending, setPending] = useState(false)
+    const [response, setResponse] = useState('')
+    const router = useRouter()
+
+    function submit(){
+        const info = document.getElementById('info')
+        setPending(true)
+        info.style.height = '0px'
+        info.innerHTML = ''
+        fetch('/api/account/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                email:user.email,
+                password:user.password
+            })
+        })
+        .then(async (response)=>{
+            const data = await response.json()
+            if(!response.ok) throw new Error(data.error)
+            return data
+        })
+        .then((data)=>{
+            info.innerHTML = `<span class="text-success">${data.message}</span>`
+            info.style.height = '40px'
+            setResponse('success')
+            setTimeout(()=>{
+                router.replace(redirect||'/dashboard')
+            }, 500)
+        })
+        .catch((error)=>{
+            info.innerHTML = `<span class="text-danger">${error.message}${error.message.includes('activated')?'<a href="/account/activation?resendtoken=true" class="link"> Request another?</a>':''}</span>`
+            info.style.height = '40px'
+            setPending(false)
+            setTimeout(()=>{
+                info.innerHTML = ""
+                info.style.height = '0px'
+            }, 10000)
+        })
+    }
+
+    return (
+        <>
+            <form action={submit} className="d-flex flex-column w-100">
+                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" value={user.email} onChange={(e)=>setUser({...user, email:e.target.value})} placeholder="e.g johndoe@gmail.com" disabled={pending} required /></label>
+                <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password" className="w-100 rounded-2" value={user.password} onChange={(e)=>setUser({...user, password:e.target.value})} placeholder="************" disabled={pending} required /></label>
+                <button className="btn btn-primary border border-2 border-primary rounded-pill align-self-center px-5" disabled={pending}>{pending&&response===''?<><i className="fa-solid fa-circle-notch fa-spin fa-spin-pulse me-2"></i>Please Wait</>:'Sign In'}</button>
+            </form>
+        </>
+    )
 }
 
 export function AccountOpening({user, type}) {
@@ -136,89 +272,6 @@ export function AccountOpening({user, type}) {
         </>
     )
 }
-
-export function Registration() {
-    const searchParams = useSearchParams()
-    //const [account, setAccount] = useState(searchParams.get("asa")||"user")
-    const [state, action] = useFormState(submitForm, {api: '/api/account/register', status: "pending"})
-    const [pass, setPass] = useState()
-    const [confirmpass, setConfirmpass] = useState()
-    const router = useRouter()
-
-    if (state?.success) {
-        setTimeout(()=>{
-            router.replace('/login')
-        }, 2000)
-    }
-
-    /*
-    function updateURL(type) {
-        const query = new URLSearchParams(searchParams.toString())
-        query.set('asa', type)
-        history.replaceState(null, '', `?${query.toString()}`)
-        setAccount(type)
-      }
-    */
-
-    return (
-        <>
-            {/*<div className="align-self-stretch d-flex flex-column flex-md-row justify-content-center align-items-center column-gap-3 mb-5">
-               <h6 className="text-primary">Register as:</h6>
-                <div className="align-self-stretch rounded-pill p-1 bg-secondary-subtle border border-1 border-primary">
-                    <button className={`w-50 btn ${account==='user'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('user')}>User</button>
-                    <button className={`w-50 btn ${account==='landlord'?'bg-primary text-white fw-semibold shadow-sm':''} rounded-pill px-5`} onClick={()=>updateURL('landlord')} >Landlord</button>
-                </div>
-            </div>*/}
-            <form action={action} className="d-flex flex-column w-100" autoComplete="no">
-                <label className="d-flex flex-column align-items-start mb-3 fs-6">Full name<input type="text" name="names" className="w-100 rounded-2" placeholder="e.g John Doe" required/></label>
-                <label className="d-flex flex-column align-items-start mb-3">Phone Number<input type="phone" name="phone" className="w-100 rounded-2" placeholder="+234 801 234 5678" required/></label>
-                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" placeholder="e.g johndoe@gmail.com" required/></label>
-                {/*account==="landlord" &&
-                    <label className="d-flex flex-column align-items-start mb-3">Space Location
-                        <select name="location" className="w-100 rounded-2">
-                            <option value="Uyo">Uyo</option>
-                        </select>
-                    </label>
-                */}
-                <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password"  className="w-100 rounded-2" value={pass} onChange={(e)=>setPass(e.target.value)} placeholder="************" required/></label>
-                <label className="d-flex flex-column align-items-start mb-3">Confirm Password<input type="password" id="confirm-password"  className="w-100 rounded-2" value={confirmpass} onChange={(e)=>{e.target.nextElementSibling&&e.target.nextElementSibling.remove(); setConfirmpass(e.target.value)}} onBlur={(e)=>{pass!==confirmpass?e.target.parentElement.insertAdjacentHTML("beforeend","<em class='text-danger'>Must match with password</em>"):e.target.nextElementSibling?.remove()}} placeholder="***********" required/></label>
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
-                    <label className="d-flex flex-row align-items-start mb-3 align-items-center"><input type="checkbox" className="me-2" required/><span>I agree to the&nbsp;<Link href="/terms-and-conditions" className="link" required>Terms and Conditions</Link>&nbsp;of AfriqLoan</span></label>
-                    <Link href="/login" className="link mb-3">Alread Registered?</Link>
-                </div>
-                <input type="hidden" name="type" value="user" />
-                <input type="hidden" name="role" value="user" />
-                <input type="hidden" name="status" value="pending" />
-                <Submit disabled={pass!==confirmpass} classNames="px-5 align-self-center">Submit</Submit>
-            </form>
-            <small id="info" className={`${state?.success?"text-success":"text-danger"}`}>{state?.message}</small>
-        </>
-    )
-}
-
-
-export function LoginForm({email, redirect}) {
-    const [state, action] = useFormState(submitForm,  {api: '/api/account/login', status: "pending"})
-    const router = useRouter()
-
-    if (state?.success) {
-        setTimeout(()=>{
-            router.replace(redirect||'/dashboard')
-        }, 500)
-    }
-
-    return (
-        <>
-            <form action={action} className="d-flex flex-column w-100">
-                <label className="d-flex flex-column align-items-start mb-3">E-mail Address<input type="email" name="email" className="w-100 rounded-2" defaultValue={email&&email} placeholder="e.g johndoe@gmail.com" required /></label>
-                <label className="d-flex flex-column align-items-start mb-3">Password<input type="password" name="password" className="w-100 rounded-2" placeholder="************" required /></label>
-                <Submit classNames="align-self-center px-5">Sign In</Submit>
-            </form>
-            <small id="info" className={`${state?.success?"text-success":"text-danger"} text-center`}>{state.message}</small>
-        </>
-    )
-}
-
 
 export function PasswordResetRequest() {
     const [state, action] = useFormState(passwordResetInstruction, {})

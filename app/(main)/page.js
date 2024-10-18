@@ -96,7 +96,7 @@ export default async function Home() {
                 <p className="fs-5 pe-md-4">Work along like-minded professionals in our vibrant coworking spaces in Lagos, with break out areas and networking events to foster collaboration and growth.</p>
                 <div className="d-flex flex-column flex-md-row w-100">
                   <Link href="/register?asa=landlord" className="btn btn-primary rounded-pill border border-2 border-primary me-md-3 mb-3 px-4" role="button">Register As Landlord</Link>
-                  <Link href="/services/spaces/coworking" className="btn btn-outline-primary rounded-pill border-2 border-primary mb-3 px-5" role="button">Explore</Link>
+                  <Link href="/services/spaces/coworking" className="btn btn-outline-primary rounded-pill border border-2 border-primary mb-3 px-5" role="button">Explore</Link>
                 </div>
               </div>
               <div className="col-12 col-md-6 order-0 order-md-1" style={{backgroundImage:"url('/office-space.png')", backgroundPosition:"center", backgroundRepeat:"no-repeat", backgroundSize:"100%", minHeight:"250px"}}>

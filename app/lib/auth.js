@@ -7,7 +7,8 @@ import { revalidatePath } from "next/cache"
 import { deleteSession, decrypt } from "@/app/lib/session"
 
 export default async function Auth() {
-  const session_token = cookies().get("session_token")?.value
+  const cookieStores = await cookies()
+  const session_token = cookieStores.get("session_token")?.value
   try{
     //Validate user session and information
     const data  = await decrypt(session_token)

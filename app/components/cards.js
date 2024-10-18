@@ -1,8 +1,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createPortal, useFormState } from 'react-dom'
+import { useState, useEffect, useActionState } from 'react'
+import { createPortal} from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -17,7 +17,7 @@ import { Submit } from '@/app/components/buttons'
 export function Token({title, balance, jointsavings, currentuser }){
     const [view, setView] = useState({})
     const [modal, setModal] = useState({width:0, height:0, opacity:0})
-    const [response, action] = useFormState(jointSavingsInvitation, {})
+    const [response, action] = useActionState(jointSavingsInvitation, {})
     const amountFormat = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', currencyDisplay: 'symbol' })
 
     useEffect(()=>{
@@ -58,7 +58,7 @@ export function Token({title, balance, jointsavings, currentuser }){
                         <div className={`text-center fst-italic ${response?.success?"text-success":"text-danger"}`}>{response?.message}</div>
                         <i className="position-absolute top-0 end-0 mt-4 me-2 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>setModal({width:0, height:0, opacity:0})}></i>
                     </div>
-                </Modal>, document.body
+                </Modal>, document?.body
             )}
         </>
     )
@@ -119,10 +119,10 @@ export function Listing({_id, image, title, description, pricing, preview, user,
             return data
         })
         .then((data)=>{
-            info.innerHTML = `<i class="text-success">${data.message}</i>`
+            info.innerHTML = `<span class="text-success text-center">${data.message}</span>`
         })
         .catch((error)=>{
-            info.innerHTML = `<i class="text-danger">${error.message}. Please try again!</i>`
+            info.innerHTML = `<span class="text-danger text-center">${error.message}. Please try again!</span>`
         })
         .finally(()=>{
             setState('completed')
@@ -130,6 +130,12 @@ export function Listing({_id, image, title, description, pricing, preview, user,
                 setState('')
             }, 4000)
         })
+    }
+
+    function handleClick(action){
+        setModal({height:'100%', width:'100%', opacity:1})
+        setState('action')
+        setAction(action)
     }
 
     return (
@@ -142,24 +148,24 @@ export function Listing({_id, image, title, description, pricing, preview, user,
                 </div>
                 <ul className="dropdown dropdown-menu bg-white shadow border-0 rounded-1" style={{minWidth:'5rem'}}>
                     <li className="px-4 py-1" role="button" onClick={()=>router.push(`/listings/listing?mode=edit&id=${_id}`)}>Edit</li>
-                    <li className="px-4 py-1" role="button" onClick={()=>{setAction('deleted'); setState('action')}}>Delete</li>
-                    <li className="px-4 py-1" role="button" onClick={()=>{setAction(status==="out of order"?'active':'out of order'); setState('action')}}>{status==="out of order"?'Set Active':'Out of Order'}</li>
+                    <li className="px-4 py-1" role="button" onClick={()=>handleClick('deleted')}>Delete</li>
+                    <li className="px-4 py-1" role="button" onClick={()=>handleClick(status==="out of order"?'active':'out of order')}>{status==="out of order"?'Set Active':'Out of Order'}</li>
                 </ul>
             </>
             }
             {(state === "action" || state === "pending"||state === "completed") &&
                 createPortal(
                     <Modal height={modal.height} width={modal.width} setModal={setModal}>
-                        <>
-                            <p className="text-primary fs-5 fw-semibold text-center">{`CONFIRM UPDATE?`}</p>
+                        <div className="p-4">
+                            <h5 className="text-primary fw-bold text-center mb-0">{`CONFIRM ACTION?`}</h5>
+                            <h6 className="text-center mb-4 fst-italic text-primary">Kindly confirm or cancel selected action. </h6>
                             <div className="w-100 d-flex flex-column flex-md-row gap-2 justify-content-center ">
                                 <button className="btn btn-primary rounded-pill px-4 border border-2 border-primary" onClick={()=>setState('')} disabled={state==='pending'||state==='completed'}><i className="fa-solid fa-xmark pe-2"></i>Cancel</button>
                                 <button className="btn btn-primary rounded-pill px-4 border border-2 border-primary" onClick={()=>updateListing(_id, action)} disabled={state==='pending'||state==='completed'}><i className={`fa-solid ${state==='pending'?'fa-circle-notch fa-spin':'fa-check'} me-2`}></i>{state === 'pending'?'Please Wait':'Confirm'}</button>
                             </div>
-                            <em id="info"></em>
-                        </>
-                    </Modal>,
-                    document.getElementById('listings'))
+                            <div id="info" className="fst-italic text-center"></div>
+                        </div>
+                    </Modal>, document?.body)
             }
             <div className="position-relative">
                 <Image
@@ -246,7 +252,7 @@ export function TestimonialsFallbackCard ({ layout }){
 
 export function DashboardCard({ user, title, service }){
     const [modal, setModal] = useState({width:0, height:0, opacity:0})
-    const [response, action] = useFormState(upgradeToMerchant, {})
+    const [response, action] = useActionState(upgradeToMerchant, {})
     const router = useRouter()
 
     if (response?.success) {
@@ -267,7 +273,7 @@ export function DashboardCard({ user, title, service }){
                                 <Link href="/listings?type=coworking" className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4">View Listings</Link>
                             }
                             {user?.type !== "merchant" &&
-                                <button className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4" onClick={()=>setShow({width:'100%', height:'100%', opacity:1})}>Upgrade To Mechant</button>
+                                <button className="btn btn-primary border border-2 border-primary rounded-pill fw-bold px-4" onClick={()=>setModal({width:'100%', height:'100%', opacity:1})}>Upgrade To Mechant</button>
                             }
                         </>
                     }
@@ -291,25 +297,25 @@ export function DashboardCard({ user, title, service }){
                         </div>
                     }
                     {service==="space"&&
-                        <>
+                        <div className="d-flex flex-column gap-4 p-4">
                             <div>
                                 <h4 className="text-primary text-center mb-0">Select Your Primary Location</h4>
                                 <p className="mb-0 text-center ">Kindly select the location as to which the property you&apos;re leasing is located. </p>
                             </div>
                             <form action={action} className="w-100 d-flex flex-column gap-4">
                                 <div className="d-flex flex-column flex-md-row gap-2">
-                                    <select name="location" className="flex-fill rounded-3 flex-fills py-3">
+                                    <select name="location" className="flex-fill rounded-3 flex-fills py-3 rounded-pill">
                                         <LGA />
                                     </select>
-                                    <Submit classNames="px-5">Submit</Submit>
+                                    <Submit classNames="px-5 rounded-4">Submit</Submit>
                                 </div>
                                 <input type="hidden" name="userId" defaultValue={user._id} />
                                 <em className={`text-center ${response?.success?"text-success":"text-danger"}`}>{response?.message}</em>
                             </form>
-                        </>
+                        </div>
                     }
                     <i className="position-absolute top-0 end-0 mt-4 me-2 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>setModal({width:0, height:0, opacity:0})}></i>
-                </Modal>, document.body
+                </Modal>, document?.body
             )}
       </div>
     )

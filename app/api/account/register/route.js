@@ -7,20 +7,18 @@ import { Activation } from "@/app/lib/mailer";
 
 export async function POST(request) {
     const data = await request.json()
+    if(data.phone.startsWith('0')) data.phone = data.phone.slice(1,)
+    data.phone = `+${data.countrycode}${data.phone}`
     try{
         //Check for database connection establishment
-        const users = await Connection('afriqloan', 'users')
+        const users = await Connection('afriqloan','users')
         const activation = await Connection('afriqloan', 'email_activations')
         //Check if phone number is already registered
         const number = await users.findOne({"contact.phone":data.phone})
-        if(number){
-            throw new Error("A user already exist with this phone number.", {code: 403})
-        }
+        if(number) throw new Error("A user already exist with this phone number. Please confirm the number and try again.", {cause: {status: 403}})
         //Check if e-mail is already registered
         const email = await users.findOne({"contact.email":data.email})
-        if(email){
-            throw new Error("E-mail already registered on this application", {code: 403})
-        }
+        if(email)throw new Error("E-mail already registered on this application. Try login?", {cause: {status: 403}})
         //Encrypt user password
         const salt = await bcrypt.genSalt(10)
         const hashpassword = await bcrypt.hash(data.password, salt)
@@ -28,6 +26,7 @@ export async function POST(request) {
         data.password = {current: hashpassword}
         delete data.email
         delete data.phone
+        delete data.countrycode
         //Insert user into the database and confirm
         const user = await users.insertOne(data)
         if(!user.acknowledged){
@@ -41,11 +40,11 @@ export async function POST(request) {
             status:user.status
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
-        await activation.insertOne({token:token, user:data._id, timestamp: new Date()})
+        await activation.insertOne({_id:data._id, token:token, timestamp: new Date()})
         //Send activation email to user and return response
-        const response = await Activation(token, "Email Account Activation", "activation", data.contact.email)
-        return NextResponse.json({message:"Account created successfully. Redirecting shortly..."}, {status:201})
+        await Activation(token, "Email Account Activation", "activation", data.contact.email)
+        return NextResponse.json({message:"Account created successfully, kindly follow activation instruction in the supplied email address. Redirecting shortly..."}, {status:201})
     }catch(error){
-        return NextResponse.json({error:error.message||"An error occured trying to create your account. Please try again!"}, {status:error?.code||500})
+        return NextResponse.json({error:error.message||"An error occured trying to create your account. Please try again!"}, {status:error?.cause.status||500})
     }
 }

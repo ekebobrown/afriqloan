@@ -18,6 +18,7 @@ export default async function UserListings({searchParams}) {
     if(!Object.hasOwn(searchParams, 'type')) (
         redirect("/listings?type=coworking")
     )
+    const params = await searchParams
     const { data } = await Auth()
     const user = await Connection("afriqloan","users")
                         .then((users)=>users.findOne({_id:new ObjectId(data._id)},{projection: {_id:0, type:1}}))
@@ -42,11 +43,11 @@ export default async function UserListings({searchParams}) {
                 </div>
             </div>
             <div className="d-flex border border-2 bg-tertiary border-primary rounded-pill justify-content-between row-cols-2 p-1">
-                <Link href="/listings?type=coworking" scroll={false} replace={true} className={`${searchParams.type==='coworking'?'bg-primary rounded-pill text-white fw-semibold shadow':''} btn fs-4 fw-bold`}>Co-Working</Link>
-                <Link href="/listings?type=officespace" scroll={false} replace={true} className={`${searchParams.type==='officespace'?'bg-primary rounded-pill text-white fw-semibold shadow':''} btn fs-4 fw-bold`}>Office Space</Link>
+                <Link href="/listings?type=coworking" scroll={false} replace={true} className={`${params.type==='coworking'?'bg-primary rounded-pill text-white fw-semibold shadow':''} btn fs-4 fw-bold`}>Co-Working</Link>
+                <Link href="/listings?type=officespace" scroll={false} replace={true} className={`${params.type==='officespace'?'bg-primary rounded-pill text-white fw-semibold shadow':''} btn fs-4 fw-bold`}>Office Space</Link>
             </div>
             <Suspense fallback={<ListingsFallback />}>
-                <Listings params={searchParams.type} />
+                <Listings params={params.type} />
             </Suspense>
         </section>
     )

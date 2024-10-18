@@ -14,16 +14,15 @@ export async function GET(request){
         }
         //Check for associated user and activation status
         const users = await Connection("afriqloan","users")
-        const user = await users.findOne({_id:activation.user})
+        const user = await users.findOne({_id:activation._id})
         if(user.status==="activated") {
             return NextResponse.redirect(new URL(`/login?activation=used&email=${user.contact.email}`, request.url))
         }
         //Change user's status to "activated"
-        const contact = await users.updateOne({_id:activation.user}, {$set: {status:"activated"}})
-        console.log(contact)
+        const contact = await users.updateOne({_id:activation._id}, {$set: {status:"activated"}})
         if(!contact.acknowledged) throw new Error("An error occurred trying to activate account")
         //Remove activation document
-        await activations.deleteOne({user: activation.user})
+        await activations.deleteOne({_id: activation._id})
         return NextResponse.redirect(new URL(`/login?activation=successful&email=${user.contact.email}`, request.url))
     }catch(error){
         return NextResponse.redirect(new URL(`/account/activation`, request.url))

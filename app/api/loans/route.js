@@ -5,7 +5,8 @@ import Connection from "@/app/lib/db"
 import { headers } from "next/headers"
 
 export async function GET(){
-    const id = headers().get("x-authorization-id")
+    const headersList = await headers()
+    const id = headersList.get("x-authorization-id")
     try{
         //Connect to database and pull loan information for user
         const loans = await Connection('afriqloan', 'users')

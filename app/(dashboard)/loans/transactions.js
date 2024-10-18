@@ -106,7 +106,7 @@ export default function Transactions({ id }) {
                             </thead>
                             <tbody>
                             {transactions?.map((datum, i)=>(
-                                <tr key={datum._id}>
+                                <tr key={i}>
                                     <td>{i+1}</td>
                                     <td>{datum.purpose}</td>
                                     <td>{currencyFormat.format(datum.amount)}</td>

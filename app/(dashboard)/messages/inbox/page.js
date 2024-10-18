@@ -5,29 +5,20 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import Skeleton from "react-loading-skeleton"
 
+import { useFetcher } from "@/app/lib/fetchers"
+import Toast from "@/app/components/toasts"
 import silhouette from "@/public/silhouette/universal-blue.svg"
 
 export default function Inbox(){
-    const [messages, setMessages] = useState()
     const [preview, setPreview] = useState()
     const [selected, setSelected] = useState([])
-    const [action, setAction] = useState(false)
-
-    useEffect(()=>{
-        fetch(`/api/messages`, {
-            signal: AbortSignal.timeout(15000),
-            next: {revalidate: 30}
-        })
-        .then((response)=>response.json())
-        .then((messages)=>setMessages(messages.filter(message=>message.flags.status!=="deleted")))
-        .catch((error)=>{
-            setMessages("error")
-        })
-    }, [])
+    const [update, setUpdate] = useState(false)
+    const [toast, setToast] = useState({})
+    const {data, error, isLoading, isValidating, mutate} = useFetcher('api/messages')
 
     function handleClick(message, index, property, value, e){
         if(message.flags[property]!==value){
-            setAction(true)
+            setUpdate(true)
             fetch("/api/messages", {
                 method: e?.shiftKey && value==="deleted"?"DELETE":"PATCH",
                 body: JSON.stringify({
@@ -41,30 +32,31 @@ export default function Inbox(){
                 return response.json()
             })
             .then((data) => {
-                setMessages(messages.map((msg, i)=>{
-                    if(i === index) return {...msg, flags: {...msg.flags, [property]:data?.value}}
-                    else return msg
-                }).filter(message=>message.flags.status!=="deleted"))
-                setAction(false)
+                mutate()
+                setUpdate(false)
+                if(value!=="read"&&value!=="unread") {setToast({...toast, state:true, color: '#FFFFFF', status: 'success', msg:`Message successfully ${typeof value==='boolean'?value===true?'starred':'unstarred':e.shiftKey?'deleted':'trashed'} `})}
             })
-            .catch((error) => console.log(error))
+            .catch((error) => {
+                setUpdate(false)
+                if(value!=="read"&&value!=="unread") {setToast({...toast, state:true, color: '#FFFFFF', status: 'error', msg:`An error occurred. Please try again`})}
+            })
         }
     }
 
     return(
-        <section id="messages" className="d-flex flex-column flex-md-row border-light border" style={{minHeight:"86vh"}}>
+        <section id="messages" className="flex-fill h-100 d-flex flex-column flex-md-row border-light border">
             <div className="col-12 col-md-4 bg-white shadow-sm">
                 <div className="d-flex justify-content-between p-3 shadow-sm">
                     <div className="d-flex align-items-center position-relative">
-                        <input type="checkbox" checked={selected?.length === messages?.length && messages?.length > 0} onChange={(e)=>{!e.target.checked?setSelected([]):setSelected(messages?.map((msg)=> msg._id))}} />
+                        <input type="checkbox" checked={selected?.length === data?.length && data?.length > 0} onChange={(e)=>{!e.target.checked?setSelected([]):setSelected(data?.map((msg)=> msg._id))}} />
                         <i className="fa-solid fa-angle-down ms-2" role="button" data-bs-toggle="dropdown"></i>
                         <ul className="dropdown dropdown-menu bg-white shadow border-0 rounded-0" style={{minWidth:'5rem'}}>
-                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(messages?.map((msg)=> msg._id))}>All</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(data?.map((msg)=> msg._id))}>All</li>
                             <li className="px-4 py-1" role="button" onClick={()=>setSelected([])}>None</li>
-                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(messages?.filter((msg)=>msg?.flags.status==="read").map((msg)=> msg._id))}>Read</li>
-                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(messages?.filter((msg)=>msg?.flags.status==="unread").map((msg)=> msg._id))}>Unread</li>
-                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(messages?.filter((msg)=>msg?.flags.starred).map((msg)=> msg._id))}>Starred</li>
-                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(messages?.map((msg)=>selected.includes(msg._id)?null:msg._id).filter((msg)=>msg!==null))}>Inverse</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(data?.filter((msg)=>msg?.flags.status==="read").map((msg)=> msg._id))}>Read</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(data?.filter((msg)=>msg?.flags.status==="unread").map((msg)=> msg._id))}>Unread</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(data?.filter((msg)=>msg?.flags.starred).map((msg)=> msg._id))}>Starred</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>setSelected(data?.map((msg)=>selected.includes(msg._id)?null:msg._id).filter((msg)=>msg!==null))}>Inverse</li>
                         </ul>
 
                     </div>
@@ -78,14 +70,14 @@ export default function Inbox(){
                         <span>Sort</span>
                         <i className="fa-solid fa-angle-down ms-2" role="button" data-bs-toggle="dropdown"></i>
                         <ul className="dropdown dropdown-menu bg-white shadow border-0 rounded-0" style={{minWidth:'5rem'}}>
-                            <li className="px-4 py-1" role="button" onClick={()=>messages?.sort((i, j)=>{i._id - j._id})}>None</li>
-                            <li className="px-4 py-1" role="button" onClick={()=>messages?.sort((i, j)=>{i.flags.status - j.flags.status})}>Read</li>
-                            <li className="px-4 py-1" role="button" onClick={()=>messages?.sort((i, j)=>{i.flags.status - j.flags.status})}>Unread</li>
-                            <li className="px-4 py-1" role="button" onClick={()=>messages?.sort((i, j)=>{i.flags.starred === j.flags.starred})}>Starred</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>data?.sort((i, j)=>{i._id - j._id})}>None</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>data?.sort((i, j)=>{i.flags.status - j.flags.status})}>Read</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>data?.sort((i, j)=>{i.flags.status - j.flags.status})}>Unread</li>
+                            <li className="px-4 py-1" role="button" onClick={()=>data?.sort((i, j)=>{i.flags.starred === j.flags.starred})}>Starred</li>
                         </ul>
                     </div>
                 </div>
-                {!(messages||Array.isArray(messages)) &&
+                {isLoading &&
                     [1,2,3,4].map((elem)=>(
                         <div key={elem} className="d-flex flex-column p-3 border-bottom border-light">
                             <div className="w-100 d-flex align-items-center">
@@ -100,19 +92,18 @@ export default function Inbox(){
                         </div>
                     ))
                 }
-                {messages === "error" && <div className="p-4 text-danger">(Error retrieving your messages)</div>}
-                {Array.isArray(messages) && messages?.length === 0 && <div className="p-4">(empty)</div>}
-                {Array.isArray(messages) && messages?.length > 0 &&
-                    messages?.map((message, index)=>(
-                        <div key={index} className={`position-relative message d-flex flex-row p-3 border-bottom border-light ${action?'opacity-50':''} ${selected.includes(message?._id)?'bg-tertiary':''}`} role="button" onClick={()=>{setPreview(message); handleClick(message, index, "status", "read")}}>
+                {data && data?.length === 0 && <div className="p-4">(empty)</div>}
+                {data && data?.length > 0 &&
+                    data?.filter((message)=>message.flags.status!=="deleted").map((message, index)=>(
+                        <div key={index} className={`position-relative message d-flex flex-row p-3 border-bottom border-light ${update?'opacity-50':''} ${selected.includes(message?._id)?'bg-tertiary':''}`} role="button" onClick={()=>{setPreview(message); handleClick(message, index, "status", "read")}}>
                             <input type="checkbox" className="align-self-center me-2" checked={selected.includes(message._id)} onChange={()=>setSelected(selected.includes(message._id)?selected.filter(elem => elem !== message._id):[...selected, message._id])} onClick={(e)=>e.stopPropagation()}/>
                             <div className="flex-fill d-flex flex-column" style={{maxWidth:'92%'}}>
                                 <div className={`d-flex align-items-center ${message.flags.status==="read"?"fw-normal":"fw-semibold text-primary"}`}>
                                     <h6 className={`me-auto mb-0 ${message.flags.status==="read"?"fw-normal":""}`}>{message.names}</h6>
-                                    {new Date() - new Date(message.timestamp) < 86400000?new Date(message.timestamp).toLocaleTimeString():new Date(message.timestamp).toDateString()}
+                                    {new Date() - new Date(message.timestamp) < 86400000?new Intl.DateTimeFormat("en-US",{hour12:true, hour:"2-digit", minute:"2-digit"}).format(new Date(message.timestamp)):new Date(message.timestamp).toDateString()}
                                 </div>
                                 <div className="d-inline-flex align-items-center">
-                                    <i className={`fa-solid fa-angles-right fa-xs me-1 ${message.flags.important?'text-danger':''}`} title="Toggle Importance"></i>
+                                    <i className={`fa-solid fa-angles-right fa-xs me-1 ${message?.important?'text-danger':''}`} title="Toggle Importance"></i>
                                     <h6 className={`mb-0 ${message.flags.status==="read"?"fw-normal":"text-primary"}`}>{message.subject}</h6>
                                 </div>
                                 <div className="d-flex flex-row align-items-center justify-content-between">
@@ -160,6 +151,11 @@ export default function Inbox(){
                     </div>
                 }
             </div>
+            {toast.state &&
+                <Toast position="bottom-right" toast={toast} setToast={setToast}>
+                    {toast.msg}
+                </Toast>
+            }
         </section>
     )
 }

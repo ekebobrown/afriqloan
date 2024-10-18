@@ -6,6 +6,7 @@ import { AccountOpening } from "@/app/components/forms"
 
 export default async function CreateAccount({searchParams}) {
     const { data } = await Auth()
+    const params = await searchParams
     const user = await Connection("afriqloan","users")
                         .then((users)=>users.findOne(
                             {_id:new ObjectId(data._id)},
@@ -13,10 +14,10 @@ export default async function CreateAccount({searchParams}) {
                         ))
     return (
         <section id="create" className="bg-white p-4 p-md-5 m-2 m-md-5 p-lg rounded-4">
-            <h2>{searchParams.type==="personal"?"Personal":"Joint"} Account Form</h2>
+            <h2>{params.type==="personal"?"Personal":"Joint"} Account Form</h2>
             <p>Basic Information</p>
             <hr />
-            <AccountOpening user={user} type={searchParams.type} />
+            <AccountOpening user={user} type={params.type} />
         </section>
     )
 }

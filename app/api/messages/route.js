@@ -13,21 +13,25 @@ export async function GET(request){
     if(!isAuthenticated) redirect(`/login?redirect=${encodeURIComponent(path)}${searchParams}`)
     try{
         const messages = await Connection("afriqloan", "messages")
-                            .then((messages)=>messages.aggregate([{$match: {$and: [{recipient: {$in: [new ObjectId(data?._id), "all"]}, "flags.status":{$ne: "deleted"}}]}},
+                            .then((messages)=>messages.aggregate([{$match: {'recipient.id': new ObjectId(data?._id)}},
                                 {$lookup: {from:"users", localField:"sender", foreignField:"_id", as:"sender"}},
-                                {$sort: {_id: -1}},
-                                {$project: {subject:1, body:1, timestamp:1, status:1, flags:1, names: {$arrayElemAt: ["$sender.names", 0]}, avatar: {$arrayElemAt: ["$sender.avatar", 0]}}}])
-                            .toArray())
+                                {$sort: {timestamp: -1}},
+                                {$project: {subject:1, body:1, timestamp:1, status:1, important:1, recipient: {$filter: {input: "$recipient", as: "recipient", cond: {$eq: ["$$recipient.id", new ObjectId(data._id)]}}}, names: {$arrayElemAt: ["$sender.names", 0]}, avatar: {$arrayElemAt: ["$sender.avatar", 0]}}},
+                                {$replaceRoot: {newRoot: {$mergeObjects: [{$arrayElemAt: ['$recipient', 0]}, '$$ROOT']}}},
+                                {$unset: 'recipient'}
+                            ]).toArray())
+
         return NextResponse.json(JSON.parse(JSON.stringify(messages)),
                                     {status:200, headers: {'Set-Cookie':`session_token=${session_token}; Path=/; Expires=${new Date(Date.now() + 60*30*1000).toUTCString()}; Secure; HttpOnly`}}
                                 )
     }catch(error){
+
         return NextResponse.json(null)
     }
 }
 
 export async function PATCH(request){
-    const { isAuthenticated } = await Auth()
+    const { data, isAuthenticated } = await Auth()
     const path = request.nextUrl.pathname
     const searchParams = request.nextUrl.searchParams
     const {_id, property, value} = await request.json()
@@ -35,18 +39,18 @@ export async function PATCH(request){
     if(!isAuthenticated) redirect(`/login?redirect=${encodeURIComponent(path)}${searchParams}`)
     try{
         const message = await Connection("afriqloan", "messages")
-                                .then((messages)=>messages.findOneAndUpdate({_id:new ObjectId(_id)}, {$set: {[`flags.${property}`]:value}}, {projection: {_id:0, flags:1}, returnDocument: "after"}))
+                                .then((messages)=>messages.findOneAndUpdate({_id:new ObjectId(_id), 'recipient.id':new ObjectId(data._id)}, {$set: {[`recipient.$.flags.${property}`]:value}}))
         if(!message){
             throw new Error("Unable to update message status")
         }
-        return NextResponse.json({success:true, value:message.flags[property]})
+        return NextResponse.json({success:true})
      }catch(error){
         return NextResponse.json({success:false}, {status:500})
      }
 }
 
 export async function DELETE(request){
-    const { isAuthenticated } = await Auth()
+    const { data, isAuthenticated } = await Auth()
     const path = request.nextUrl.pathname
     const searchParams = request.nextUrl.searchParams
     const {_id} = await request.json()
@@ -54,8 +58,7 @@ export async function DELETE(request){
     if(!isAuthenticated) redirect(`/login?redirect=${encodeURIComponent(path)}${searchParams}`)
     try{
         const deleted = await Connection("afriqloan", "messages")
-                                .then((messages)=>messages.findOneAndDelete({_id:new ObjectId(_id)}))
-        console.log(deleted)
+                                .then((messages)=>messages.findOneAndUpdate({_id:new ObjectId(_id)}, {$pull: {recipient: {id:new ObjectId(data._id)}}}))
         if(!deleted) throw new Error("Error deleting message.")
         return NextResponse.json({success:true, value:"deleted"})
     }catch(error){

@@ -207,7 +207,7 @@ h1, h2, h3, h4, h5, h6 {
 
 #sidebar li {
   padding: 0.5rem 1rem;
-  border-left: 3px solid #F8F9FA;
+  transition: all 0.2s linear;
 }
 
 #sidebar li:hover, #sidebar .active {
@@ -264,7 +264,7 @@ input[type="date"],
 input[type="search"],
 textarea,
 select {
-  border: 1px solid var(--primary-color);
+  border: 0.12rem solid var(--primary-color);
   padding: 1.0rem;
   resize: none;
 }
@@ -407,8 +407,10 @@ input::placeholder{
 }
 
 .portal {
+  position: relative;
   display: flex;
   flex-direction: column;
+  overflow: scroll;
   align-items: center;
   background-color: #FFFFFF;
   border: 10px solid #FFFFFF;
@@ -429,20 +431,90 @@ input::placeholder{
   transition: all .5s ease-in-out;
 }
 
+.slideoutleft{
+  animation: slideoutleft 1.0s linear normal
+}
+
+@keyframes slideoutleft {
+  0% {transform: translateX(10%)}
+  100% {transform: translateX(-100%)}
+}
+
+.slideinleft{
+  animation: slideinleft 0.5s linear normal
+}
+
+@keyframes slideinleft {
+  0% {transform: translateX(-100%)}
+  90% {transform: translateX(10%)}
+  95% {transform: translateX(5%)}
+  100% {transform: translateX(0%)}
+}
+
+.slideinright{
+  animation: slideinright .5s linear normal
+}
+
+@keyframes slideinright {
+  0% {transform: translateX(110%)}
+  70% {transform: translateX(-10%)}
+  100% {transform: translateX(0%)}
+}
+
+.slideoutright{
+  animation: slideoutright 1.0s linear normal
+}
+
+@keyframes slideoutright {
+  0% {transform: translateX(-2%)}
+  20% {transform: translateX(10%)}
+  100% {transform: translateX(110%)}
+}
+
+.progress {
+  width: 100%;
+  animation: progress 5.0s linear
+}
+
+@keyframes progress {
+  0%{width: 100%}
+  100%{width: 0%}
+}
+
 /* Media Screens */
 @media (min-width: 768px) {
   .border-right {
     border-right: 5px solid #CCCCCC
-  }
-
-  nav .navbar-toggler {
-    display: none !important
   }
 }
 
 @media (max-width: 768px) {
   .border-bottom-sm {
     border-bottom: 5px solid #CCCCCC
+  }
+}
+
+@media (min-width: 992px) {
+  nav .navbar-toggler {
+    display: none !important
+  }
+
+  .offcanvas {
+    display: flex !important;
+    flex:1 1 auto !important;
+    position: relative !important;
+    visibility: visible !important;
+    z-index: 0 !important;
+    border-width: 0 !important;
+  }
+
+  .offcanvas-start {
+    transform: translateX(0) !important;
+  }
+
+  #content {
+    position: relative;
+    left: 16.666666666% !important
   }
 }
 

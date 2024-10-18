@@ -40,10 +40,10 @@ export default function Recents({session_token, joint_account}){
                     </tr>
                 </thead>
                 <tbody>
-                    {transactions?.map((transaction)=>(
-                        <tr key={transaction._id}>
+                    {transactions?.map((transaction, i)=>(
+                        <tr key={i}>
                             <td>{transaction.destination}</td>
-                            <td><div className="d-flex flex-column">{new Date(transaction.timestamp).toDateString()}<small className="text-primary" style={{fontSize: "0.8rem"}}>{new Date(transaction.timestamp).toLocaleTimeString()}</small></div></td>
+                            <td><div className="d-flex flex-column">{new Date(transaction.timestamp).toDateString()}<small className="text-primary" style={{fontSize: "0.8rem"}}>{new Intl.DateTimeFormat("en-US", {hour12:true, hour:"2-digit", minute:"2-digit"}).format(new Date(transaction.timestamp))}</small></div></td>
                             <td>{currencyFormat.format(transaction.amount)}</td>
                             <td>{`${transaction.destination.includes("Wallet")?"wallet":"savings"}-${transaction.reference}`}</td>
                         </tr>

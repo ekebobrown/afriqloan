@@ -11,7 +11,7 @@ export async function GET(request){
         //Establish database connection and fetch listing
         const listing = await Connection("afriqloan", "listings")
                                     .then((listings)=>listings.findOne({_id:new ObjectId(_id)}, {projection: {_id:0}}))
-        if(!listing) throw new Error("Artificial Error")
+        if(!listing) throw new Error()
         return NextResponse.json({success:true, message:"listing fetched successfully", listing: listing})
     }catch(error){
         return NextResponse.json({success:false, message:error.message||"Error fetching listing", listing:null}, {status:500})
@@ -73,7 +73,7 @@ export async function PATCH(request){
         //Establish database connection and update listing
         await Connection("afriqloan", "listings")
                 .then((listings)=>listings.updateOne({_id:new ObjectId(_id)}, {$set: {status:action}}))
-        revalidatePath("(dashboard)/listings")
+        revalidatePath("/(dashboard)/listings")
         return NextResponse.json({success:true, message:"Listing status successfully updated"})
     }catch(error){
         return NextResponse.json({success:false, message:error.message||"Error updating listing"}, {status:500})
@@ -90,6 +90,7 @@ export async function DELETE(request){
         //Establish database connection and delete listing
         await Connection("afriqloan", "listings")
                 .then((listings)=>listings.deleteOne({_id:new ObjectId(_id)}))
+        revalidatePath("/(dashboard)/listings")
         return NextResponse.json({success:true, message:"Listing successfully deleted"})
     }catch(error){
         return NextResponse.json({success:false, message:error.message||"Error deleting listing"}, {status:500})

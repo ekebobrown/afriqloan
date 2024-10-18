@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function Landing({searchParams}) {
-  const { source } = searchParams
+  const { source } = await searchParams
   if(source){
     if(source === "internal"){
       return <LoanRecovery />

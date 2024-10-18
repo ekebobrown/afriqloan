@@ -13,7 +13,8 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function Savings() {
-  const session_token = cookies().get("session_token")?.value
+  const cookieStore = await cookies()
+  const session_token = cookieStore.get("session_token")?.value
   const { data } = await Auth()
   const [ user ] = await Connection("afriqloan", "users")
                 .then((users)=>users.aggregate([
@@ -51,7 +52,7 @@ export default async function Savings() {
           </div>
         </div>
         <div className="d-flex flex-column flex-md-row row-gap-3">
-          {user?.savings.map((saving)=>(
+          {user?.savings?.map((saving)=>(
               <Token key={saving.type} title={saving.type} balance={saving.balance} />
           ))}
           {user?.jointsavings && <Token key="Joint Savings" title="Joint Savings" balance={user.jointsavings.savingsgoal} jointsavings={JSON.parse(JSON.stringify(user.jointsavings))} currentuser={data._id} />}
@@ -60,7 +61,7 @@ export default async function Savings() {
           <div className="d-flex flex-row text-white fs-6 gap-2 me-auto">
             Account No: {user?.contact.phone.slice(4,)}
           </div>
-          {user?.savings[0].type!=="Wallet" &&
+          {user?.savings && user?.savings[0].type!=="Wallet" &&
             <Link href="/savings/fund?q=wallet" className="d-flex btn btn-primary rounded-pill border border-2 border-white align-items-center" role="button">
               <i className="fa-solid fa-wallet me-2"></i>
               <span>Create Wallet</span>
@@ -72,7 +73,7 @@ export default async function Savings() {
                 <span className="lh-1">Activate Joint Savings</span>
             </ActivateSavings>
           }
-          {user?.savings.length<2 &&
+          {user?.savings?.length<2 &&
             <ActivateSavings classNames="px-4" type="personal">
                 <i className="fa-solid fa-user-plus me-2"></i>
                 <span className="lh-1">Add Personal Savings</span>

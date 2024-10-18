@@ -12,13 +12,14 @@ export const metadata = {
 };
 
 export default async function ResetPassword({searchParams}) {
-  const {reset, email, token} = searchParams
+  const params = await searchParams
+  const {reset, email, token} = params
 
-  if(Object.keys(searchParams).length === 0 || (Object.keys(searchParams).length === 1 && reset!=='request')){
+  if(Object.keys(params).length === 0 || (Object.keys(params).length === 1 && reset!=='request')){
       notFound()
   }
 
-  if(Object.hasOwn(searchParams, "token")){
+  if(Object.hasOwn(params, "token")){
     const reset = await Connection("afriqloan", "password_resets")
                           .then((resets)=>resets.findOne({email:email, token:token}))
     if(!reset){
@@ -45,12 +46,12 @@ export default async function ResetPassword({searchParams}) {
   return (
     <>
         <section id="form" className={`${styles.fh1} d-flex justify-content-center mx-auto text-primary px-4`}>
-            <div className={`container-md d-flex flex-column justify-content-around bg-white rounded-3 p-4 p-md-5 my-5 row-gap-3 align-self-center`} style={{maxWidth:"600px"}}>
-                <h4 className="fw-bold text-center">Reset Password</h4>
+            <div className={`container-md d-flex flex-column justify-content-around bg-white rounded-3 p-4 p-md-5 my-5 align-self-center`} style={{maxWidth:"600px"}}>
+                <h4 className="fw-bold text-center mb-0">Reset Password</h4>
                 {reset==="request" &&
                   <>
-                    <span className="text-center">Input registered e-mail to continue</span>
-                    <PasswordResetRequest email={searchParams?.email} />
+                    <span className="text-center mb-2">Input registered e-mail to continue</span>
+                    <PasswordResetRequest email={params?.email} />
                   </>
                 }
                 {reset==="true" && <PasswordReset email={email} token={token} />}
