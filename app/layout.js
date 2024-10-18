@@ -1,4 +1,5 @@
 import { Raleway } from "next/font/google";
+import { Suspense } from "react";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -24,7 +25,9 @@ export default function RootLayout({children}) {
             <Bootstrap />
             <IsOffline />
             {children}
-            <Overlay />
+            <Suspense>
+              <Overlay />
+            </Suspense>
         </body>
     </html>
   )

@@ -9,11 +9,11 @@ export async function POST(request){
     const credentials = await request.json()
     try{
         //Query database for user supplied email
-        const user = await Connection('afriqloan', 'users')
-                            .then((users)=>users.findOne(
+        const users = await Connection('afriqloan', 'users')
+        const user = await users.findOne(
                                 {"contact.email":credentials?.email},
                                 {projection: {names:1, type:1, role:1, status:1, password:1}}
-                            ))
+                            )
         //Check if user exist in the database
         if(!user){
             throw new Error('User does not exist, check email and try again', {status: 404})
@@ -36,12 +36,12 @@ export async function POST(request){
             status: user.status
         }
         const session_token = jwt.sign(payload, process.env.JWT_SECRET_KEY)
-        await Connection("afriqloan","sessions")
-                    .then((sessions)=>sessions.insertOne({user:user?._id, loggedin:new Date(), ip:request.headers.get("X-Forwarded-For"), browser:request.headers.get("user-agent")}))
-        return NextResponse.json({message:"Sign in successful. Redirecting...", session_token:session_token})
+        await users.updateOne({_id:user?._id}, {$set: {session: {loggedin:new Date(), ip:request.headers.get("X-Forwarded-For"), browser:request.headers.get("user-agent")}}})
+        return NextResponse.json({message:"Sign in successful. Redirecting..."},
+                                {status:200, headers: {'Set-Cookie':`session_token=${session_token}; Path=/; Expires=${new Date(Date.now() + 60*30*1000).toUTCString()}; Secure; HttpOnly`}}
+                            )
     }catch(error){
-        console.log(error)
-        const errmsg = error.message.includes('ESERVFAIL')?"A network error occurred. Please check your connection and try again.":error.message
+        const errmsg = error.message.includes('ESERVFAIL')||error.message.includes('ETIMEOUT')?"A network error occurred. Please check your connection and try again.":error.message
         return NextResponse.json({error:errmsg}, {status:error?.status||500})
     }
 }

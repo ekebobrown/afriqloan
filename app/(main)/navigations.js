@@ -10,13 +10,13 @@ export async function Main() {
         <nav className="navbar navbar-expand-md bg-primary">
             <div className="container-md gap-3">
                 <Brand />
-                <div className="order-2 d-flex align-items-center gap-3">
+                <div className="order-1 order-md-2 d-flex align-items-center gap-3">
                     <button className="order-1 navbar-toggler border-2 border-white" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                         <i className="fa-solid fa-bars text-white"></i>
                     </button>
                     {isAuthenticated && data.type!=="merchant" && <div className="position-relative"><i className="order-0 fa-solid fa-cart-shopping fa-2x text-white"></i><div className="d-flex justify-content-center align-items-center bg-warning rounded-circle position-absolute top-0 start-100 translate-middle" style={{width:'20px', height:'20px'}}>1</div></div>}
                 </div>
-                <div className="order-1 collapse navbar-collapse pb-4 pb-md-0 justify-content-md-end" id="navbar">
+                <div className="order-2 order-md-1 collapse navbar-collapse pb-4 pb-md-0 justify-content-md-end" id="navbar">
                     <ul className="navbar-nav col-12 col-md-10 mb-2 justify-content-center align-items-md-center mb-lg-0">
                         <li className="nav-item px-2">
                             <Link className="nav-link" href="/aboutus">About Us</Link>

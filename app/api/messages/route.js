@@ -13,7 +13,7 @@ export async function GET(request){
     if(!isAuthenticated) redirect(`/login?redirect=${encodeURIComponent(path)}${searchParams}`)
     try{
         const messages = await Connection("afriqloan", "messages")
-                            .then((messages)=>messages.aggregate([{$match: {$and: [{recipient: {$in: [new ObjectId(data?._id), "all"]}, "flags.status":{$ne: "deleted"}}]}},
+                            .then((messages)=>messages.aggregate([{$match: {recipient: {$in: [new ObjectId(data?._id), "all"]}}},
                                 {$lookup: {from:"users", localField:"sender", foreignField:"_id", as:"sender"}},
                                 {$sort: {_id: -1}},
                                 {$project: {subject:1, body:1, timestamp:1, status:1, flags:1, names: {$arrayElemAt: ["$sender.names", 0]}, avatar: {$arrayElemAt: ["$sender.avatar", 0]}}}])

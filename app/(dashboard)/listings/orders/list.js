@@ -58,21 +58,27 @@ export function List({order}){
                         </div>
                     </div>
                     {elem[i] && createPortal(
-                        <div className="position-relative" style={{width:'100%', height:'500px'}}>
-                            <Image
-                                src={item?.image[index]}
-                                fill
-                                style={{objectFit: "cover", borderRadius:"8px"}}
-                                alt={item?.title}
-                            />
-                            <i className="position-absolute top-0 end-0 mt-4 me-2 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>transition(i)}></i>
-                            {(item.image.length>1 && index>0) && 
-                                <i className="fa-solid fa-circle-arrow-left position-absolute top-50 start-0 ps-2 translate-middle-y text-primary fa-xl" role="button" onClick={()=>setIndex(index-1)} style={{zIndex:99999}}></i>
+                        <div className="d-flex flex-row overflow-scroll" style={{width:'600px', maxWidth:'80vw', height:'500px'}}>
+                            <div className="d-flex flex-nowrap transition gap-2">
+                                {item.image.map((img, i)=>(
+                                    <div key={i} className="position-relative" style={{width:`calc(${document.getElementById('portal').getBoundingClientRect().width}px + 30px)`, height:'100%'}}>
+                                        <Image
+                                            src={img}
+                                            fill
+                                            style={{objectFit: "cover", borderRadius:"10px"}}
+                                            alt={item?.title}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                            <i className="position-absolute top-0 end-0 mt-3 me-1 fa-solid fa-circle-xmark fa-xl text-primary" role="button" onClick={()=>transition(i)}></i>
+                            {/*(item.image.length>1 && index>0) &&
+                                <i className="fa-solid fa-circle-arrow-left position-absolute top-50 start-0 mx-1 translate-middle-y text-primary fa-xl" role="button" onClick={()=>setIndex(index-1)}></i>
                             }
                             {(item.image.length>1 && index<item.image.length-1) && 
-                                <i className="fa-solid fa-circle-arrow-right position-absolute top-50 end-0 pe-2 translate-middle-y text-primary fa-xl" role="button" onClick={()=>setIndex(index+1)} style={{zIndex:99999}}></i>
-                            }
-                        </div>, document?.getElementById('portal'))
+                                <i className="fa-solid fa-circle-arrow-right position-absolute top-50 end-0 mx-1 translate-middle-y text-primary fa-xl" role="button" onClick={()=>setIndex(index+1)}></i>
+                            */}
+                         </div>, document?.getElementById('portal'))
                     }
                 </Fragment>
             ))}

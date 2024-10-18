@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { useState, useRef, useEffect } from "react";
-import Skeleton from "react-loading-skeleton";
 
 export default function Carousel({children, autoplay=false, continous=false, delay=10, scrollCount=1, limit}){
   const [scrollindex, setScrollindex] = useState(0)
